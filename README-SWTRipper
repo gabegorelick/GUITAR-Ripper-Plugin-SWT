@@ -1,0 +1,101 @@
+==============================================
+NOTES FOR SWT IMPLEMENTATION OF THE GUI RIPPER
+==============================================
+
+1.) Modifications made to the GUIRipper-Core project:
+	i.)  edu.umd.cs.guitar.ripper.GRipperMonitor.java
+		- added protected modifier to getClosedWindowCache() method
+		- added protected modifier to isExpandable() method
+		
+		
+2.) Running and Debugging the SWT GUI Ripper
+
+	Prerequisite: Your execution environment must be 32-bit.  The SWT library that we provide is for 32-bit systems,
+				and the ripping process will fail if attempting to run on a 64-bit system.  If you only
+				have a 64-bit system, we suggest downloading the free "VirtualBox" virtualization software
+				from Oracle Corporation and installing a 32-bit Linux based operating system, such as 
+				Kubuntu, as a virtual machine.  This will allow you to run 32-bit applications on a 64-bit machine.
+
+	a.) Importing the SWT GUI Ripper projects
+		1.) Assume that your clone of the swtripper projects exists in ~/swtripper
+		2.) Download and launch Eclipse (we used Eclipse 3.6.0 for Java developers) with a fresh workspace
+		3.) Go to "File" -> "Import" -> "General" -> "Existing Projects into Workspace" -> "Next"
+		4.) Under "Select root directory" in the import projects wizard, select "Browse..."
+		5.) Browse to the location of your clone (i.e. ~/swtripper)
+		6.) Select a folder directly underneath the clone that you have not yet imported (e.g. GUITARModel-Core)
+		7.) Click "OK" in the Browse window and then click "Finish" in the import wizard
+		8.) Repeat steps a.3 to a.7 for each of the 4 projects in the clone
+		
+	b.) Running the provided examples of GUI Ripping SWT Snippets
+		1.) Go to "Run" -> "Run Configurations...".  Underneath the "Java Application" category, You should see 4 provided 
+			configurations named "Run_snippet#(description)", which run the standalone GUIs, and also 4 provided configurations
+			named "Rip_snippet#(description)", which run the ripping process on those GUIs.
+		2.) Select the "Rip" configuration to run, then click "Run"
+		3.) You should see a new GUI appear briefly, and the ripping process will proceed and dump its output to the Eclipse
+			console view.  Additionally, after the ripping is finished, you should see 3 new files under the "GUIRipper-Plugin-SWT"
+			project (if not, then right click the project in the Package Explorer and select "Refresh").  These files will be 
+			"log_widget.xml", "Snippet#.GUI.xml" and "Snippet#.log", similar to the original JFC ripper project.
+			
+	c.) Debugging the provided examples of GUI Ripping SWT Snippets
+		1.) Go to "Debug" -> "Debug Configurations...".  You should see 4 provided configurations named "Rip_snippet#(description)"
+		2.) Select the configuration to debug, then click "Debug"
+		3.) You should be prompted to switch to the Debug perspective, and the application should break in the main method of SWTRipperMain.
+		4.) Add breakpoints as desired throughout the code to debug the execution through the projects
+		
+	d.) Running the SWT GUI Ripper on new examples
+		1.) Copy the new code into a new source folder underneath the "GUIRipper-Plugin-SWT" project. (e.g. snippets)
+		2.) Go to "Run" -> "Run Configurations..." and select an existing SWT GUI Ripper launch configuration.
+		3.) In the top left of the window, click the button with tooltip "Duplicates the currently selected launch configuration"
+		4.) Modify the new launch configuration as necessary in order to run with your new code
+		5.) Repeat steps 2.b.1 to 2.b.3
+		
+	NOTES:
+		- Please note that much of the code of our project was templated (copied) from the original JFC Ripper project so that it would 
+		be compatible with the existing GUITAR system.  Therefore, some of the overridden functions do not have documentation since we 
+		only focused on	implementing the crucial methods that would enable GUI ripping for SWT.
+		
+	Addendum:
+		The following is a description of our methodology and philosophy used to produce the SWTRipper plug-in for GUIRipper. We are providing 
+		this information such that anyone who wishes to improve upon or extend our plug-in can do so with a deeper understanding of why the 
+		code is structured the way it is, and further to point out some areas in which we knowingly chose to make what we consider to be 
+		bad decisions architecturally speaking in order to adhere to the philosophy we outlined.
+		
+		Methodology:
+			After reading through the GUIRipper source, most importantly the JFCRipper plug-in, we used the following methodolgy to arrive at 
+			our final working SWTRipper plug-in.
+				1.) Copy all of the code from JFCRipper into a new plug-in called SWTRipper.
+				2.) Download, compile, and attempt to rip SWT snippets using our SWTRipper code. (a copy of JFCRipper at this point)
+				3.) As the plug-in failed, either behaviorally incorrect or crashed, debug the same SWT snippet to find where the crash 
+					occurred.
+				4.) Reason about why the behavior was incorrect or why the crash occurred at that point and come up with a set of potential
+					fixes.
+				5.) Order the fixes according to our chosen philosophy and then apply the most desirable fix.
+				6.) If the fix worked, repeat the above process until a new problem occurred or the snippet is ripped successfully.
+				7.) Move on to a new snippet or example to test some aspect of the SWT library which has not yet been tested.
+			
+			The result of this process resulted in a working SWTRipper plug-in for GUIRipper, but most of the code is largely a direct copy of 
+			the JFCRipper plug-in with 'JFC' changed to 'SWT'. That is not to say that the process was not long and sometimes arduous, but 
+			simply that it highlights several deficiencies within the current architecture. Most notable among those is the considerable 
+			amounts of code duplication. See the next section on our applied philosophy as to why we did not work to address these issues.
+			
+		Philosophy:
+			Our philosophy was simple: achieve a working SWTRipper plug-in which integrates as cleanly and seamlessly as possible into the 
+			existing open-source GUIRipper project.
+			
+			Given that our end goal was to integrate our code into an existing open-source project which we had nothing to do with prior to 
+			our project, we wanted to make that integration have the smallest possible footprint such that the authors of the open-source 
+			project would not only be more likely to want to integrate our code, but have an easy time doing so. Both of these properties 
+			would drastically increase the probability of our code being accepted.
+			
+			With that in mind, when we needed to change the way the existing plug-in or core application worked, we sought out whichever 
+			change made the fewest modifications to existing source code. We nearly completed the entire SWTRipper plug-in without a single 
+			change to the GUIRipper core. The only changes we had no choice but to make are documented at the top of this readme, and without 
+			them, our code could not have overridden the necessary functions in the superclass due to their not being visible to our class.
+			
+		Drawbacks:
+			At the time of implementing the SWTRipper plug-in, we were well aware of many places in which the desirable design was to extract 
+			common code out of JFCRipper and put it into either a concrete superclass (The current superclass of JFC* and SWT* is G*, and all 
+			core G* classes are abstract.) or a shared library. Either of these approaches would have promoted code reuse over code duplication 
+			and made future maintenance and extensions significantly easier. As s side-note, another suggested fix was to have the SWT plug-in 
+			extend the JFC plug-in where code reuse was possible, thus avoiding the undesirable duplication. However, this fix is generally 
+			just messy and unintuitive in that two independent plug-ins now have explicit dependencies.
