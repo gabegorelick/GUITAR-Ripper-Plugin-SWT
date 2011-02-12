@@ -5,6 +5,8 @@
 	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar"/>
 	<classpathentry kind="lib" path="lib/swt.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar"/>
+	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
