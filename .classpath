@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/swt.jar"/>
 	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
