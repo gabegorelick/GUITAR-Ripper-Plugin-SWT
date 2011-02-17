@@ -1,0 +1,4 @@
+<project name="SWTRipper-jenkins" default="build">
+	<property file="jenkins.properties"/>
+	<import file="build-common.xml"/>
+</project>
