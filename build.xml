@@ -17,7 +17,7 @@
     <path id="SWTRipper.classpath">
         <pathelement location="bin"/>
     	<!-- use the jar instead of individual classes so Jenkins can track this dependency easier -->
-    	<pathelement location="${SWTModel.location}/dist/swtmodel.jar"/>
+    	<pathelement location="swtmodel.jar"/>
     	<pathelement location="lib/args4j-2.0.12.jar"/>
         <pathelement location="lib/swt.jar"/>
         <pathelement location="lib/log4j-1.2.15.jar"/>
@@ -44,10 +44,10 @@
         <ant antfile="build.xml" dir="${SWTModel.location}" inheritAll="false" target="clean"/>
     </target>
 	
-	<target name="get" description="Get the project from hudson">
+	<!--<target name="get" description="Get the project from hudson">
 		<property name="project.build.number" value="lastSuccessfulBuild"/>
 		<get src="http://128.8.126.21:8080/job/GUITAR-Model-Plugin-SWT/${project.build.number}/artifact/dist/swtmodel.jar" dest="./"/>
-	</target>
+	</target>-->
     
 	<target name="dist" depends="build" description="Build a JAR of this project">
 		<mkdir dir="dist"/>
