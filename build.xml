@@ -9,19 +9,23 @@
     <property name="source" value="1.6"/>
     <path id="SWTModel.classpath">
         <pathelement location="${SWTModel.location}/bin"/>
+    	    	
         <pathelement location="${SWTModel.location}/lib/swt.jar"/>
         <pathelement location="${SWTModel.location}/lib/GUITARModel-Core.jar"/>
         <pathelement location="${SWTModel.location}/lib/log4j-1.2.15.jar"/>
     </path>
     <path id="SWTRipper.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/args4j-2.0.12.jar"/>
+    	<!-- use the jar instead of individual classes so Jenkins can track this dependency easier -->
+    	<pathelement location="${SWTModel.location}/dist/swtmodel.jar"/>
+    	<pathelement location="lib/args4j-2.0.12.jar"/>
         <pathelement location="lib/swt.jar"/>
         <pathelement location="lib/log4j-1.2.15.jar"/>
         <pathelement location="lib/GUITARModel-Core.jar"/>
         <pathelement location="lib/GUIRipper-Core.jar"/>
         <path refid="SWTModel.classpath"/>
     </path>
+	
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
@@ -33,11 +37,26 @@
     </target>
     <target name="clean">
         <delete dir="bin"/>
+    	<delete dir="dist"/>
+    	<delete file="swtmodel.jar"/>
     </target>
     <target depends="clean" name="cleanall">
         <ant antfile="build.xml" dir="${SWTModel.location}" inheritAll="false" target="clean"/>
     </target>
-    <target depends="build-subprojects,build-project" name="build"/>
+	
+	<target name="get" description="Get the project from hudson">
+		<property name="project.build.number" value="lastSuccessfulBuild"/>
+		<get src="http://128.8.126.21:8080/job/GUITAR-Model-Plugin-SWT/${project.build.number}/artifact/dist/swtmodel.jar" dest="./"/>
+	</target>
+    
+	<target name="dist" depends="build" description="Build a JAR of this project">
+		<mkdir dir="dist"/>
+		<jar destfile="dist/swtripper.jar">
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+	
+	<target depends="build-subprojects,build-project" name="build"/>
     <target name="build-subprojects">
         <ant antfile="build.xml" dir="${SWTModel.location}" inheritAll="false" target="build-project">
             <propertyset>
