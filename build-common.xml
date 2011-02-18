@@ -13,7 +13,6 @@
 		 build-dependent properties -->
 	<!-- <property file="build.properties"/> -->
 	
-	
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
@@ -26,12 +25,13 @@
     </path>
     <path id="SWTRipper.classpath">
         <pathelement location="bin"/>
+        <pathelement location="lib/swtmodel.jar"/>
         <pathelement location="lib/args4j-2.0.12.jar"/>
         <pathelement location="lib/swt.jar"/>
         <pathelement location="lib/log4j-1.2.15.jar"/>
         <pathelement location="lib/GUITARModel-Core.jar"/>
         <pathelement location="lib/GUIRipper-Core.jar"/>
-        <path refid="SWTModel.classpath"/>
+        <!-- <path refid="SWTModel.classpath"/>-->
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -44,10 +44,19 @@
     </target>
     <target name="clean">
         <delete dir="bin"/>
+        <delete file="lib/swtmodel.jar"/>
     </target>
     <target depends="clean" name="cleanall">
         <ant antfile="build.xml" dir="${SWTModel.location}" inheritAll="false" target="clean"/>
     </target>
+    
+    <target name="dist" depends="build" description="Build a JAR of this project">
+		<mkdir dir="dist"/>
+		<jar destfile="dist/swtripper.jar">
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+    
     <target depends="build-subprojects,build-project" name="build"/>
     <target name="build-subprojects">
         <ant antfile="build.xml" dir="${SWTModel.location}" inheritAll="false" target="build-project">
