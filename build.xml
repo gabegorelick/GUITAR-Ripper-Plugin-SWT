@@ -6,24 +6,32 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+	
+	<!-- we may want to pull these out into a properties file eventually -->
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="swtmodel.jar" value="${lib.dir}/swtmodel.jar"/>
+	<property name="swtripper.jar" value="${dist}/swtripper.jar"/>
     
     <path id="SWTRipper.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="lib/args4j-2.0.12.jar"/>
-        <pathelement location="lib/swt.jar"/>
-        <pathelement location="lib/log4j-1.2.15.jar"/>
-        <pathelement location="lib/GUITARModel-Core.jar"/>
-        <pathelement location="lib/GUIRipper-Core.jar"/>
+        <pathelement location="${build.dir}"/>
+        <pathelement location="${lib.dir}/args4j-2.0.12.jar"/>
+        <pathelement location="${lib.dir}/swt.jar"/>
+        <pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
+        <pathelement location="${lib.dir}/GUITARModel-Core.jar"/>
+        <pathelement location="${lib.dir}/GUIRipper-Core.jar"/>
         
         <!-- swtmodel.jar is currently copied from the ripper job by Jenkins at runtime -->
         <!-- TODO when we do a release, make sure we include swtmodel.jar in lib directly so that it can build without Jenkins -->
-        <pathelement location="lib/swtmodel.jar"/>
+        <pathelement location="${swtmodel.jar}"/>
     </path>
     
     <target name="init">
-        <mkdir dir="bin"/>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
+        <mkdir dir="${build.dir}"/>
+        <copy includeemptydirs="false" todir="${build.dir}">
+            <fileset dir="${src.dir}">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -32,25 +40,25 @@
         
 	<target name="build" depends="init">
         <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-            <src path="src"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" source="${source}" target="${target}">
+            <src path="${src.dir}"/>
             <classpath refid="SWTRipper.classpath"/>
         </javac>
     </target>
 	
     <target name="dist" depends="build" description="Build a JAR of this project">
-		<mkdir dir="dist"/>
-		<jar destfile="dist/swtripper.jar">
-			<fileset dir="bin"/>
+		<mkdir dir="${dist.dir}"/>
+		<jar destfile="${swtripper.jar}">
+			<fileset dir="${build.dir}"/>
 		</jar>
 	</target>
 	
 	<target name="clean">
-        <delete dir="bin"/>
-        <delete dir="dist"/>
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
         <!-- remove swtmodel.jar so Jenkins can add a potentially newer version -->
         <!-- TODO remove this when we release -->
-        <delete file="lib/swtmodel.jar"/>
+        <delete file="${swtmodel.jar}"/>
     </target>
             
 </project>
