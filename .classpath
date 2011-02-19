@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar"/>
 	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
