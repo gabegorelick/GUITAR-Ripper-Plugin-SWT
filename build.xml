@@ -88,7 +88,7 @@
 	<target name="init-test">
 		<mkdir dir="${test.build.dir}"/>
 		<copy includeemptydirs="false" todir="${test.build.dir}">
-            <fileset dir="${src.dir}">
+            <fileset dir="${test.src.dir}">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
