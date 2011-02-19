@@ -2,3 +2,4 @@ bin/*
 /.classpath
 /lib/swtmodel.jar
 /test/ripper-fb.xml
+/test/bin
