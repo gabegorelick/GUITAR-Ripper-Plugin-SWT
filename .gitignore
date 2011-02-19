@@ -3,3 +3,4 @@ bin/*
 /lib/swtmodel.jar
 /test/ripper-fb.xml
 /test/bin
+/test/testresults
