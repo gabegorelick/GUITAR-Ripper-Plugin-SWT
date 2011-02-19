@@ -4,3 +4,4 @@ bin/*
 /test/ripper-fb.xml
 /test/bin
 /test/testresults
+/build.properties
