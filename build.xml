@@ -14,17 +14,17 @@
 	<property name="build.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="dist.dir" value="dist"/>
+	<property name="test.dir" value="test"/>
+	<property name="test.lib.dir" value="${test.dir}/lib"/>
 	<property name="swtmodel.jar" value="${lib.dir}/swtmodel.jar"/>
 	<property name="swtripper.jar" value="${dist}/swtripper.jar"/>
-	<property name="findbugs.home" value="${lib.dir}/testing/findbugs-1.3.9"/>
+	<property name="findbugs.home" value="${test.lib.dir}/findbugs-1.3.9"/>
 	<path id="findbugs.classpath">
-		<fileset dir="${findbugs.home}/lib">
+		<fileset dir="${findbugs.home}">
 			<!-- this is why you should have something manage dependencies like maven,
 				 it's such a waste to have all that cruft on the classpath -->
 			<include name="**/*.jar"/>
 		</fileset>
-		<!--<pathelement location="${findbugs.home}/lib/*.jar"/>-->
-		<!--<pathelement location="${findbugs.home}/lib/findbugs-ant.jar"/>-->
 	</path>
     
     <path id="SWTRipper.classpath">
@@ -37,7 +37,7 @@
         
         <!-- swtmodel.jar is currently copied from the ripper job by Jenkins at runtime -->
         <!-- TODO when we do a release, make sure we include swtmodel.jar in lib directly so that it can build without Jenkins -->
-    	<pathelement location="${swtmodel.jar}"/> <!-- do conditional -->
+    	<pathelement location="${swtmodel.jar}"/>
     </path>
     
     <target name="init">
@@ -86,7 +86,7 @@
 	<target name="findbugs" depends="build">
 		<!-- See http://cfunit.sourceforge.net/help-antview.php if you get an Eclipse warning about an unknown taskdef -->
 		<taskdef name="findbugs" classpathref="findbugs.classpath" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-		<findbugs home="${findbugs.home}" output="xml" outputFile="ripper-fb.xml">
+		<findbugs home="${findbugs.home}" output="xml" outputFile="${test.dir}/ripper-fb.xml">
 			<sourcePath path="${src.dir}"/>
 			<class location="${build.dir}"/>
 			<auxclasspath refid="SWTRipper.classpath"/>
