@@ -32,7 +32,18 @@
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
-    
+	<property name="coverage.dir" value="${test.dir}/coverage"/>
+	<property name="cobertura.dir" value="${coverage.dir}/cobertura-1.9.4.1"/>
+	<property name="cob.instrumented.dir" value="${coverage.dir}/instrumented"/>
+	<property name="cobertura.datafile" value="cobertura.ser"/>
+	<path id="cobertura.classpath">
+		<fileset dir="${cobertura.dir}">
+			<include name="cobertura.jar"/>
+			<include name="lib/**/*.jar"/>
+		</fileset>
+	</path>
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+	    
     <path id="SWTRipper.classpath">
         <pathelement location="${build.dir}"/>
         <pathelement location="${lib.dir}/args4j-2.0.12.jar"/>
@@ -105,19 +116,44 @@
         </javac>
 	</target>
 	
-	<target name="unit-test" description="Run unit tests" depends="init-test,build-tests">
+	<target name="unit-test" description="Run unit tests" depends="init-test,build-tests,instrument">
 		<mkdir dir="${test.out.dir}"/>
-		<junit printsummary="true">
+		
+		<!-- must fork for cobertura, see http://cobertura.sourceforge.net/anttaskreference.html -->
+		<junit fork="yes" forkmode="once" printsummary="true">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}"/>
+			
+			<!-- must specify instrumented classes before original ones! -->
+			<classpath location="${cob.instrumented.dir}"/>
 			<classpath>
 				<pathelement location="${junit.jar}"/>
 				<path refid="SWTRipper.classpath"/>
 				<pathelement path="${test.build.dir}"/>
 			</classpath>
+			<classpath refid="cobertura.classpath"/>
+			
 			<batchtest todir="${test.out.dir}">
 				<fileset dir="${test.build.dir}"/>
 				<formatter type="xml"/>
 			</batchtest>
 		</junit>
+	</target>
+	
+	<target name="instrument" depends="build">
+		<mkdir dir="${cob.instrumented.dir}"/>
+		<cobertura-instrument todir="${cob.instrumented.dir}">
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</cobertura-instrument>
+	</target>
+	
+	<target name="coverage-report" depends="unit-test">
+		<cobertura-report format="xml" srcdir="${src.dir}" destdir="${coverage.dir}" datafile="${cobertura.datafile}"/>
+		<!-- Move cobertura.ser to coverage directory. Cobertura fails if
+			 cobertua.ser isn't in base directory (even though they claim it
+			 can handle that) so copy it after it's done reading it -->
+		<move file="${cobertura.datafile}" todir="${coverage.dir}"/>
 	</target>
 	
 	<target name="findbugs" depends="build">
@@ -129,12 +165,15 @@
 			<auxclasspath refid="SWTRipper.classpath"/>
 		</findbugs>
 	</target>
-	
+				
 	<target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
 		<delete dir="${test.build.dir}"/>
 		<delete dir="${test.out.dir}"/>
+		<delete dir="${cob.instrumented.dir}"/>
+		<delete file="${coverage.dir}/${cobertura.datafile}"/>
+		<delete file="${coverage.dir}/coverage.xml"/>
 		<delete file="${findbugs.out}"/>
         <!-- remove swtmodel.jar so Jenkins can add a potentially newer version -->
         <!-- TODO remove this when we release -->
