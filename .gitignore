@@ -1,7 +1,10 @@
-bin/*
+/bin
+/build.properties
 /.classpath
 /lib/swtmodel.jar
 /test/ripper-fb.xml
 /test/bin
 /test/testresults
-/build.properties
+/test/coverage/instrumented
+/test/coverage/cobertura.ser
+/test/coverage/coverage.xml
