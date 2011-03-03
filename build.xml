@@ -43,11 +43,22 @@
 		</fileset>
 	</path>
 	<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
-	    
+	
+	<!-- Use correct swt jar depending on operating system -->
+	<condition property="swt.jar" value="swt-linux.jar">
+		<os family="unix"/>
+	</condition>
+	<condition property="swt.jar" value="swt-mac.jar">
+		<os family="mac"/>
+	</condition>
+	<condition property="swt.jar" value="swt-windows.jar">
+		<os family="windows"/>
+	</condition>
+		
     <path id="SWTRipper.classpath">
         <pathelement location="${build.dir}"/>
         <pathelement location="${lib.dir}/args4j-2.0.12.jar"/>
-        <pathelement location="${lib.dir}/swt.jar"/>
+        <pathelement location="${lib.dir}/${swt.jar}"/>
         <pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
         <pathelement location="${lib.dir}/GUITARModel-Core.jar"/>
         <pathelement location="${lib.dir}/GUIRipper-Core.jar"/>
