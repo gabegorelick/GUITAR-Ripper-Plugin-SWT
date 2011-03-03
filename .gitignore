@@ -1,10 +1,30 @@
 /bin
+
+# build.properties is developer-specific
 /build.properties
+
+# Eclipse's .classpath contains developer-specific paths (e.g. to linked sources)
 /.classpath
+
+# Should always build model from source
 /lib/swtmodel.jar
+
+# FindBugs output
 /test/ripper-fb.xml
+
 /test/bin
+
+# JUnit results
 /test/testresults
+
+# Cobertura output
 /test/coverage/instrumented
 /test/coverage/cobertura.ser
 /test/coverage/coverage.xml
+
+# Ripper output
+*.log
+/GUITAR-Default.GUI
+/log_widget.xml
+
+# EGit needs trailing newline
