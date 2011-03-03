@@ -67,7 +67,7 @@
         </copy>
     </target>
         
-	<target name="build" depends="init">
+	<target name="build" depends="init,build-model">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" source="${source}" target="${target}">
             <src path="${src.dir}"/>
@@ -92,6 +92,14 @@
 	<target name="build-model" depends="check-model" description="Build SWTModel and copy" unless="swtmodel.present">
 		<ant antfile="build.xml" dir="${swtmodel.project.dir}" target="dist"/>
 		<copy file="${swtmodel.project.dir}/dist/swtmodel.jar" todir="${lib.dir}"/>
+	</target>
+	
+	<target name="run" depends="build,build-tests" description="Run the ripper">
+		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
+			<arg line="-c edu.umd.cs.guitar.ripper.test.SWTHelloWorld"/>
+			<classpath refid="SWTRipper.classpath"/>
+			<classpath path="${test.build.dir}"/>
+		</java>
 	</target>
 		
 	<target name="test" depends="unit-test"/>
@@ -175,6 +183,11 @@
 		<delete file="${coverage.dir}/${cobertura.datafile}"/>
 		<delete file="${coverage.dir}/coverage.xml"/>
 		<delete file="${findbugs.out}"/>
+		<delete>
+			<fileset dir="." includes="*.log"/>
+		</delete>
+		<delete file="GUITAR-Default.GUI"/>
+		<delete file="log_widget.xml"/>
         <!-- remove swtmodel.jar so Jenkins can add a potentially newer version -->
         <!-- TODO remove this when we release -->
         <delete file="${swtmodel.jar}"/>
