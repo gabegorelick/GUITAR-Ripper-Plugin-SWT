@@ -141,7 +141,9 @@
 			<classpath refid="cobertura.classpath"/>
 			
 			<batchtest todir="${test.out.dir}">
-				<fileset dir="${test.build.dir}"/>
+				<fileset dir="${test.build.dir}">
+					<include name="**/*Test.class"/>
+				</fileset>
 				<formatter type="xml"/>
 			</batchtest>
 		</junit>
@@ -182,6 +184,7 @@
 		<delete dir="${cob.instrumented.dir}"/>
 		<delete file="${coverage.dir}/${cobertura.datafile}"/>
 		<delete file="${coverage.dir}/coverage.xml"/>
+		<delete file="${cobertura.datafile}"/> <!-- this sometimes gets left over -->
 		<delete file="${findbugs.out}"/>
 		<delete>
 			<fileset dir="." includes="*.log"/>
