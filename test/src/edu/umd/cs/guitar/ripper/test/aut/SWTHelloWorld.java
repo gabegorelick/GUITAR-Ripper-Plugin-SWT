@@ -1,4 +1,4 @@
-package edu.umd.cs.guitar.ripper.test;
+package edu.umd.cs.guitar.ripper.test.aut;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;

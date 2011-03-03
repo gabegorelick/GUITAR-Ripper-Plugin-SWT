@@ -96,7 +96,7 @@
 	
 	<target name="run" depends="build,build-tests" description="Run the ripper">
 		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
-			<arg line="-c edu.umd.cs.guitar.ripper.test.SWTHelloWorld"/>
+			<arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>
 			<classpath refid="SWTRipper.classpath"/>
 			<classpath path="${test.build.dir}"/>
 		</java>
