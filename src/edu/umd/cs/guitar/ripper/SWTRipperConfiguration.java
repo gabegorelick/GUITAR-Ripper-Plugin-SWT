@@ -41,16 +41,16 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
 
     // GUITAR runtime parameters
     @Option(name = "-g", usage = "destination GUI file path", aliases = "--gui-file")
-    static public String GUI_FILE = "GUITAR-Default.GUI";
+    private String guiFile = "GUITAR-Default.GUI";
 
     @Option(name = "-l", usage = "log file name ", aliases = "--log-file")
-    static public String LOG_FILE = Util.getTimeStamp() + ".log";
+    private String logFile = Util.getTimeStamp() + ".log";
 
     @Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
-    static public String LOG_WIDGET_FILE = "log_widget.xml";
+    private String logWidgetFile = "log_widget.xml";
 
     @Option(name = "-i", usage = "initial waiting time for the application to get stablized before being ripped", aliases = "--initial-wait")
-    static public Integer INITIAL_WAITING_TIME = 500;
+    private int initialWaitingTime = 500;
 
     // @Option(name = "-iw", usage =
     // "file  containing a list of windows should be ignored during ripping ",
@@ -64,22 +64,103 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
 
     // Application Under Test
     @Option(name = "-c", usage = "<REQUIRED> main class name for the Application Under Test ", aliases = "--main-class", required = true)
-    static public String MAIN_CLASS = null;
+    private String mainClass = null;
 
     @Option(name = "-a", usage = "arguments for the Application Under Test, separated by a colon (:) ", aliases = "--arguments")
-    static public String ARGUMENT_LIST;
+    private String argumentList;
 
     @Option(name = "-u", usage = "URLs for the Application Under Test, separated by a colon (:) ", aliases = "--urls")
-    static public String URL_LIST;
+    private String urlList;
 
     @Option(name = "-j", usage = "Java Virtual Machine options for the Application Under Test", aliases = "--jvm-options")
-    static public String JVM_OPTIONS;
+    private String jvmOptions;
 
     @Option(name = "-cf", usage = "Configure file for the ripper defining terminal, ignored components and ignored windows", aliases = "--configure-file")
-    public static String CONFIG_FILE = //"resources" + File.separator + "config"
+    private String configFile = //"resources" + File.separator + "config"
            // + File.separator + 
             "configuration.xml";
     
     @Option(name = "-ce", usage = "Customized event list (usually aut-specific events)", aliases = "--event-list")
-    public static String CUSTOMIZED_EVENT_LIST = null;
+    private String customizedEventList = null;
+
+	public void setGuiFile(String guiFile) {
+		this.guiFile = guiFile;
+	}
+
+	public String getGuiFile() {
+		return guiFile;
+	}
+
+	public void setLogFile(String logFile) {
+		this.logFile = logFile;
+	}
+
+	public String getLogFile() {
+		return logFile;
+	}
+
+	public void setLogWidgetFile(String logWidgetFile) {
+		this.logWidgetFile = logWidgetFile;
+	}
+
+	public String getLogWidgetFile() {
+		return logWidgetFile;
+	}
+
+	public void setInitialWaitingTime(int initialWaitingTime) {
+		this.initialWaitingTime = initialWaitingTime;
+	}
+
+	public int getInitialWaitingTime() {
+		return initialWaitingTime;
+	}
+
+	public void setMainClass(String mainClass) {
+		this.mainClass = mainClass;
+	}
+
+	public String getMainClass() {
+		return mainClass;
+	}
+
+	public void setArgumentList(String argumentList) {
+		this.argumentList = argumentList;
+	}
+
+	public String getArgumentList() {
+		return argumentList;
+	}
+
+	public void setUrlList(String urlList) {
+		this.urlList = urlList;
+	}
+
+	public String getUrlList() {
+		return urlList;
+	}
+
+	public void setJvmOptions(String jvmOptions) {
+		this.jvmOptions = jvmOptions;
+	}
+
+	public String getJvmOptions() {
+		return jvmOptions;
+	}
+
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
+
+	public String getConfigFile() {
+		return configFile;
+	}
+
+	public void setCustomizedEventList(String customizedEventList) {
+		this.customizedEventList = customizedEventList;
+	}
+
+	public String getCustomizedEventList() {
+		return customizedEventList;
+	}
+
 }
