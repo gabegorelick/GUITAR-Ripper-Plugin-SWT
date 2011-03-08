@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
+
 import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.event.SWTEventHandler;
@@ -28,7 +28,6 @@ import edu.umd.cs.guitar.model.SWTApplication;
 import edu.umd.cs.guitar.model.SWTConstants;
 import edu.umd.cs.guitar.model.SWTWidget;
 import edu.umd.cs.guitar.model.SWTWindow;
-import edu.umd.cs.guitar.ripper.GRipperMonitor;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -117,8 +116,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		Class<? extends GEvent> gCustomizedEvents;
 
 		String[] sCustomizedEventList;
-		if (SWTRipperConfiguration.CUSTOMIZED_EVENT_LIST != null)
-			sCustomizedEventList = SWTRipperConfiguration.CUSTOMIZED_EVENT_LIST
+		if (configuration.getCustomizedEventList() != null)
+			sCustomizedEventList = configuration.getCustomizedEventList()
 					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
 		else
 			sCustomizedEventList = new String[0];
@@ -140,19 +139,19 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		// Start the application
 		try {
 			String[] URLs;
-			if (SWTRipperConfiguration.URL_LIST != null)
-				URLs = SWTRipperConfiguration.URL_LIST
+			if (configuration.getUrlList() != null)
+				URLs = configuration.getUrlList()
 						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
 			else
 				URLs = new String[0];
 
-			application = new SWTApplication(SWTRipperConfiguration.MAIN_CLASS,
+			application = new SWTApplication(configuration.getMainClass(),
 					URLs);
 
 			// Parsing arguments
 			String[] args;
-			if (SWTRipperConfiguration.ARGUMENT_LIST != null)
-				args = SWTRipperConfiguration.ARGUMENT_LIST
+			if (configuration.getArgumentList() != null)
+				args = configuration.getArgumentList()
 						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
 			else
 				args = new String[0];

@@ -89,7 +89,7 @@ public class SWTRipper {
 			throw new CmdLineException("");
 		}
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY,
-				SWTRipperConfiguration.LOG_FILE);
+				CONFIG.getLogFile());
 		// PropertyConfigurator.configure(SWTConstants.LOG4J_PROPERTIES_FILE);
 		// URL logFile = this.getClass().getClassLoader().getResource(
 		// SWTConstants.LOG4J_PROPERTIES_FILE);
@@ -115,15 +115,15 @@ public class SWTRipper {
 		}
 
 		GUIStructure dGUIStructure = ripper.getResult();
-		IO.writeObjToFile(dGUIStructure, SWTRipperConfiguration.GUI_FILE);
+		IO.writeObjToFile(dGUIStructure, CONFIG.getGuiFile());
 
 		GUITARLog.log.info("-----------------------------");
 		GUITARLog.log.info("OUTPUT SUMARY: ");
 		GUITARLog.log.info("Number of Windows: "
 				+ dGUIStructure.getGUI().size());
-		GUITARLog.log.info("GUI file:" + SWTRipperConfiguration.GUI_FILE);
+		GUITARLog.log.info("GUI file:" + CONFIG.getGuiFile());
 		GUITARLog.log.info("Open Component file:"
-				+ SWTRipperConfiguration.LOG_WIDGET_FILE);
+				+ CONFIG.getLogWidgetFile());
 		ComponentListType lOpenWins = ripper.getlOpenWindowComps();
 		ComponentListType lCloseWins = ripper.getlCloseWindowComp();
 		ObjectFactory factory = new ObjectFactory();
@@ -132,7 +132,7 @@ public class SWTRipper {
 		logWidget.setOpenWindow(lOpenWins);
 		logWidget.setCloseWindow(lCloseWins);
 
-		IO.writeObjToFile(logWidget, SWTRipperConfiguration.LOG_WIDGET_FILE);
+		IO.writeObjToFile(logWidget, CONFIG.getLogWidgetFile());
 
 		// ------------------
 		// Elapsed time:
@@ -141,7 +141,7 @@ public class SWTRipper {
 		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		GUITARLog.log.info("Ripping Elapsed: " + df.format(nDuration));
-		GUITARLog.log.info("Log file: " + SWTRipperConfiguration.LOG_FILE);
+		GUITARLog.log.info("Log file: " + CONFIG.getLogFile());
 	}
 
 	/**
@@ -160,12 +160,12 @@ public class SWTRipper {
 
 		try {
 			conf = (Configuration) IO.readObjFromFile(
-					SWTRipperConfiguration.CONFIG_FILE, Configuration.class);
+					CONFIG.getConfigFile(), Configuration.class);
 
 			if (conf == null) {
 				InputStream in = getClass()
 						.getClassLoader()
-						.getResourceAsStream(SWTRipperConfiguration.CONFIG_FILE);
+						.getResourceAsStream(CONFIG.getConfigFile());
 				conf = (Configuration) IO.readObjFromFile(in,
 						Configuration.class);
 			}
