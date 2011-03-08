@@ -1,4 +1,4 @@
-package edu.umd.cs.guitar.ripper.test;
+package edu.umd.cs.guitar.ripper.test.aut;
 
 //Credit to http://www.vogella.de/articles/SWT/article.html
 
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
-public class SWTBasicTest {
+public class SWTBasicApp {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);

@@ -1,4 +1,4 @@
-package edu.umd.cs.guitar.ripper.test;
+package edu.umd.cs.guitar.ripper.test.aut;
 
 import static org.junit.Assert.assertNotNull;
 
