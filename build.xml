@@ -106,8 +106,10 @@
 	</target>
 	
 	<target name="run" depends="build,build-tests" description="Run the ripper">
+		<echo message="Arguments passed to SWTRipperMain: ${args}"/>
 		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
-			<arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>
+			<!-- Sample arguments: <arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>-->
+			<arg line="${args}"/>
 			<classpath refid="SWTRipper.classpath"/>
 			<classpath path="${test.build.dir}"/>
 		</java>
