@@ -46,7 +46,12 @@
 	
 	<!-- Use correct swt jar depending on operating system -->
 	<condition property="swt.jar" value="swt-linux.jar">
-		<os family="unix"/>
+		<and>
+		    <os family="unix"/>
+		    <not>
+		      <os family="mac"/>
+		    </not>
+		</and>
 	</condition>
 	<condition property="swt.jar" value="swt-mac.jar">
 		<os family="mac"/>
