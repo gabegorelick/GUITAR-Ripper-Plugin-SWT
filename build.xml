@@ -19,7 +19,8 @@
 	<property name="test.build.dir" value="${test.dir}/bin"/>
 	<property name="test.lib.dir" value="${test.dir}/lib"/>
 	<property name="test.out.dir" value="${test.dir}/testresults"/>
-	<property name="swtmodel.jar" value="${lib.dir}/swtmodel.jar"/>
+	<property name="swtmodel.jar.name" value="swtmodel.jar"/>
+	<property name="swtmodel.jar" value="${lib.dir}/${swtmodel.jar.name}"/>
 	<property name="swtripper.jar" value="${dist.dir}/swtripper.jar"/>
 	<property name="junit.dir" value="${test.lib.dir}/junit-4.8.2"/>
 	<property name="junit.jar" value="${junit.dir}/junit.jar"/>
@@ -151,6 +152,7 @@
 			
 			<!-- must specify instrumented classes before original ones! -->
 			<classpath location="${cob.instrumented.dir}"/>
+			<classpath location="${cob.instrumented.dir}/${swtmodel.jar.name}"/>
 			<classpath>
 				<pathelement location="${junit.jar}"/>
 				<path refid="SWTRipper.classpath"/>
@@ -167,17 +169,24 @@
 		</junit>
 	</target>
 	
+	<target name="check-swtmodel-project">
+		<available file="${swtmodel.project.dir}/${build.dir}" type="dir" property="swtmodel.project.present"/>
+	</target>
+	
 	<target name="instrument" depends="build">
-		<mkdir dir="${cob.instrumented.dir}"/>
+		<mkdir dir="${cob.instrumented.dir}"/>		
 		<cobertura-instrument todir="${cob.instrumented.dir}">
 			<fileset dir="${build.dir}">
 				<include name="**/*.class"/>
 			</fileset>
+			<fileset file="${swtmodel.jar}"/>
 		</cobertura-instrument>
 	</target>
 	
 	<target name="coverage-report" depends="unit-test">
+		<!-- don't bother specifying src of model, that's only used for complexity and html reports -->
 		<cobertura-report format="xml" srcdir="${src.dir}" destdir="${coverage.dir}" datafile="${cobertura.datafile}"/>
+					
 		<!-- Move cobertura.ser to coverage directory. Cobertura fails if
 			 cobertua.ser isn't in base directory (even though they claim it
 			 can handle that) so copy it after it's done reading it -->
