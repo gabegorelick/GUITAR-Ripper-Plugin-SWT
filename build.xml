@@ -169,10 +169,6 @@
 		</junit>
 	</target>
 	
-	<target name="check-swtmodel-project">
-		<available file="${swtmodel.project.dir}/${build.dir}" type="dir" property="swtmodel.project.present"/>
-	</target>
-	
 	<target name="instrument" depends="build">
 		<mkdir dir="${cob.instrumented.dir}"/>		
 		<cobertura-instrument todir="${cob.instrumented.dir}">
@@ -186,7 +182,7 @@
 	<target name="coverage-report" depends="unit-test">
 		<!-- don't bother specifying src of model, that's only used for complexity and html reports -->
 		<cobertura-report format="xml" srcdir="${src.dir}" destdir="${coverage.dir}" datafile="${cobertura.datafile}"/>
-					
+		
 		<!-- Move cobertura.ser to coverage directory. Cobertura fails if
 			 cobertua.ser isn't in base directory (even though they claim it
 			 can handle that) so copy it after it's done reading it -->
