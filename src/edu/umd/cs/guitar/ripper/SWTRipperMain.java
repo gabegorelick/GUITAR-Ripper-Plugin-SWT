@@ -61,6 +61,6 @@ public class SWTRipperMain {
             System.err.println();
             parser.printUsage(System.err);
         }
-        System.exit(0);
+//        System.exit(0);
     }
 }
