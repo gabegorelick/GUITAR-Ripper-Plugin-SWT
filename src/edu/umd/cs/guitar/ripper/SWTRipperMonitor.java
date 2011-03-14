@@ -181,7 +181,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void cleanUp() {
-		// do nothing
+		application.getDisplay().dispose();
 	}
 
 	@Override
