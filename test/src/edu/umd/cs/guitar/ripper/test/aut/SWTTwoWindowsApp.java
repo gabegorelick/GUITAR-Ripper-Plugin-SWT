@@ -2,9 +2,9 @@ package edu.umd.cs.guitar.ripper.test.aut;
 
 import org.eclipse.swt.widgets.*;
 
-public class SWTTwoWindowApp {
+public class SWTTwoWindowsApp {
 
-	public SWTTwoWindowApp(Display display) {
+	public SWTTwoWindowsApp(Display display) {
 		Shell shell1 = new Shell();
 		Shell shell2 = new Shell();
 
@@ -25,7 +25,7 @@ public class SWTTwoWindowApp {
 
 	public static void main(String[] args) {
 		Display display = new Display();
-		new SWTTwoWindowApp(display);
+		new SWTTwoWindowsApp(display);
 		display.dispose();
 	}
 }
