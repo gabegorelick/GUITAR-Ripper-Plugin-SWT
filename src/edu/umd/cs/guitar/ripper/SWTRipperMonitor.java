@@ -181,6 +181,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void cleanUp() {
+		// remove this if you get deadlock, works sometimes though
 		application.getDisplay().dispose();
 	}
 
@@ -285,9 +286,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		return !widget.isDisposed();
 	}
 
-	/**
-	 * TODO: remove "".equals(ID) if root window has no title
-	 */
 	@Override
 	protected boolean isExpandable(GComponent gComponent, GWindow window) {
 
@@ -297,7 +295,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		if (ID == null)
 			return false;
 
-		if ("".equals(ID))
+		if ("".equals(ID)) // TODO fix title getting
 			return false;
 
 		if (!gComponent.isEnable()) {
