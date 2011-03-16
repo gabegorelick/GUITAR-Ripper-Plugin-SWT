@@ -66,13 +66,20 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class SWTRipper {
 
 	SWTRipperConfiguration CONFIG;
+	
+	private Thread appThread;
 
 	/**
 	 * @param CONFIG
 	 */
-	public SWTRipper(SWTRipperConfiguration CONFIG) {
+	public SWTRipper(SWTRipperConfiguration CONFIG, Thread appThread) {
 		super();
 		this.CONFIG = CONFIG;
+		this.appThread = appThread;
+	}
+	
+	public Thread getAppThread() {
+		return appThread;
 	}
 
 	// Logger logger;
@@ -236,7 +243,7 @@ public class SWTRipper {
 	}
 	
 	public GRipperMonitor getMonitor() {
-		return new SWTRipperMonitor(CONFIG);
+		return new SWTRipperMonitor(CONFIG, appThread);
 	}
 
 }

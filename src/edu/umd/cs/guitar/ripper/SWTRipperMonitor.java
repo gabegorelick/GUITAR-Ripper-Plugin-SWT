@@ -42,6 +42,13 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class SWTRipperMonitor extends GRipperMonitor {
 
 	SWTApplication application;
+	
+	// thread application is running on
+	private Thread appThread;
+	
+	public SWTApplication getApplication() {
+		return application;
+	}
 
 	// Logger logger;
 	SWTRipperConfiguration configuration;
@@ -58,17 +65,36 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	volatile LinkedList<Shell> tempOpenedWinStack = new LinkedList<Shell>();
 
 	volatile LinkedList<Shell> tempClosedWinStack = new LinkedList<Shell>();
-
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param configuration
 	 *            ripper configuration
 	 */
-	public SWTRipperMonitor(SWTRipperConfiguration configuration) {
+	public SWTRipperMonitor(SWTRipperConfiguration configuration, Thread appThread) {
 		super();
 		// this.logger = logger;
 		this.configuration = configuration;
+		
+		this.appThread = appThread;
+		
+		String[] URLs;
+		if (configuration.getUrlList() != null)
+			URLs = configuration.getUrlList()
+					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+		else {
+			URLs = new String[0];
+		}
+		
+		try {
+			application = new SWTApplication(configuration.getMainClass(),
+					URLs, appThread);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -138,15 +164,15 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 		// Start the application
 		try {
-			String[] URLs;
-			if (configuration.getUrlList() != null)
-				URLs = configuration.getUrlList()
-						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-			else
-				URLs = new String[0];
+//			String[] URLs;
+//			if (configuration.getUrlList() != null)
+//				URLs = configuration.getUrlList()
+//						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+//			else
+//				URLs = new String[0];
 
-			application = new SWTApplication(configuration.getMainClass(),
-					URLs);
+//			application = new SWTApplication(configuration.getMainClass(),
+//					URLs);
 
 			// Parsing arguments
 			String[] args;
@@ -170,11 +196,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			// GUITARLog.log.error(e);
 			// }
 
-		} catch (ClassNotFoundException e) {
-			GUITARLog.log.error(e);
 		} catch (ApplicationConnectException e) {
-			GUITARLog.log.error(e);
-		} catch (MalformedURLException e) {
 			GUITARLog.log.error(e);
 		}
 	}
@@ -182,7 +204,9 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	@Override
 	public void cleanUp() {
 		// remove this if you get deadlock, works sometimes though
+		
 		application.getDisplay().dispose();
+		System.out.println("cleanedUp");
 	}
 
 	@Override
@@ -329,6 +353,14 @@ public class SWTRipperMonitor extends GRipperMonitor {
 				retWindows.addLast(gWindow);
 		}
 		return retWindows;
+	}
+
+	public void setAppThread(Thread appThread) {
+		this.appThread = appThread;
+	}
+
+	public Thread getAppThread() {
+		return appThread;
 	}
 
 }
