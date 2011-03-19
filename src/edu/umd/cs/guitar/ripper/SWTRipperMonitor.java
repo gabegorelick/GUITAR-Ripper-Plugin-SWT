@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
@@ -46,10 +47,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	// thread application is running on
 	private Thread appThread;
 	
-	public SWTApplication getApplication() {
-		return application;
-	}
-
+	private final Display display;
+	
 	// Logger logger;
 	SWTRipperConfiguration configuration;
 
@@ -90,28 +89,41 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		try {
 			application = new SWTApplication(configuration.getMainClass(),
 					URLs, appThread);
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) { // TODO handle these farther up the chain
 			e.printStackTrace();
 		}
+		
+		display = application.getDisplay();
 	}
 
 	@Override
 	public List<GWindow> getRootWindows() {
-		List<GWindow> retWindowList = new ArrayList<GWindow>();
+		final List<GWindow> retWindowList = new ArrayList<GWindow>();
+				
+		display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (display.isDisposed()) {
+					throw new AssertionError("display is disposed");
+				}
+				
+				for (Shell shell : display.getShells()) {
+					if (!isValidRootWindow(shell)) {
+						continue;
+					}
 
-		for (Shell shell : application.getDisplay().getShells()) {
-
-			if (!isValidRootWindow(shell))
-				continue;
-
-			if (sRootWindows.size() == 0
-					|| (sRootWindows.contains(shell.getText()))) {
-				GWindow gWindow = new SWTWindow(shell);
-				retWindowList.add(gWindow);
+					if (sRootWindows.size() == 0
+							|| (sRootWindows.contains(shell.getText()))) {
+						
+						GWindow gWindow = new SWTWindow(shell);
+						retWindowList.add(gWindow);
+					}
+				}
 			}
-		}
+		});
 
 		// / Debugs:
 		GUITARLog.log.debug("Root window size: " + retWindowList.size());
@@ -139,7 +151,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		}
 
 		// Registering customized supported event
-		Class<? extends GEvent> gCustomizedEvents;
+//		Class<? extends GEvent> gCustomizedEvents;
 
 		String[] sCustomizedEventList;
 		if (configuration.getCustomizedEventList() != null)
@@ -150,8 +162,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 		for (String sEvent : sCustomizedEventList) {
 			try {
-				Class<? extends GEvent> cEvent = (Class<? extends GEvent>) Class
-						.forName(sEvent);
+				@SuppressWarnings("unchecked")
+				Class<? extends GEvent> cEvent = (Class<? extends GEvent>) Class.forName(sEvent);
 				em.registerEvent(cEvent);
 			} catch (ClassNotFoundException e) {
 				GUITARLog.log.error(e);
@@ -204,9 +216,13 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	@Override
 	public void cleanUp() {
 		// remove this if you get deadlock, works sometimes though
-		
-		application.getDisplay().dispose();
-		System.out.println("cleanedUp");
+		display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				display.dispose();
+			}
+		});
+		GUITARLog.log.info("Display disposed");
 	}
 
 	@Override
@@ -240,11 +256,16 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	@Override
 	public void closeWindow(GWindow gWindow) {
 		SWTWindow sWindow = (SWTWindow) gWindow;
-		Shell shell = sWindow.getShell();
+		final Shell shell = sWindow.getShell();
 
 		// TODO: A bug might happen here, will fix later
 		// window.setVisible(false);
-		shell.dispose();
+		shell.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				shell.dispose();
+			}
+		});
 	}
 
 	@Override
@@ -292,12 +313,17 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 *            the window to consider
 	 * @return true if worth ripping, false otherwise
 	 */
-	private boolean isValidRootWindow(Shell window) {
-		// Check if window is visible
-		if (!window.isVisible())
-			return false;
-
-		return true;
+	private boolean isValidRootWindow(final Shell window) {
+		final boolean[] visible = new boolean[1];
+		
+		window.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				visible[0] = window.isVisible();
+			}
+		});
+		
+		return visible[0];
 	}
 
 	/**
@@ -306,8 +332,17 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 * @param component
 	 * @return true/false
 	 */
-	private boolean isClickable(Widget widget) {
-		return !widget.isDisposed();
+	private boolean isClickable(final Widget widget) {
+		final boolean[] disposed = new boolean[1];
+		
+		widget.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				disposed[0] = widget.isDisposed();
+			}
+		});
+		
+		return !disposed[0];
 	}
 
 	@Override
@@ -334,12 +369,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		if (gComponent.getTypeVal().equals(GUITARConstants.TERMINAL))
 			return false;
 
-		SWTWindow sWindow = (SWTWindow) window;
-		Shell shell = sWindow.getShell();
-
-		if (shell.getText() != null)
-			return false;
-
 		return true;
 	}
 
@@ -361,6 +390,10 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	public Thread getAppThread() {
 		return appThread;
+	}
+	
+	public SWTApplication getApplication() {
+		return application;
 	}
 
 }
