@@ -14,18 +14,11 @@
 	<property name="build.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="test.dir" value="test"/>
-	<property name="test.src.dir" value="${test.dir}/src"/>
-	<property name="test.build.dir" value="${test.dir}/bin"/>
-	<property name="test.lib.dir" value="${test.dir}/lib"/>
-	<property name="test.out.dir" value="${test.dir}/testresults"/>
 	<property name="swtmodel.jar.name" value="swtmodel.jar"/>
 	<property name="swtmodel.jar" value="${lib.dir}/${swtmodel.jar.name}"/>
 	<property name="swtripper.jar" value="${dist.dir}/swtripper.jar"/>
-	<property name="junit.dir" value="${test.lib.dir}/junit-4.8.2"/>
-	<property name="junit.jar" value="${junit.dir}/junit.jar"/>
-	<property name="findbugs.home" value="${test.lib.dir}/findbugs-1.3.9"/>
-	<property name="findbugs.out" value="${test.dir}/ripper-fb.xml"/>
+	<property name="findbugs.home" value="${lib.dir}/findbugs-1.3.9"/>
+	<property name="findbugs.out" value="${lib.dir}/ripper-fb.xml"/>
 	<path id="findbugs.classpath">
 		<fileset dir="${findbugs.home}">
 			<!-- this is why you should have something manage dependencies like maven,
@@ -33,17 +26,6 @@
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
-	<property name="coverage.dir" value="${test.dir}/coverage"/>
-	<property name="cobertura.dir" value="${coverage.dir}/cobertura-1.9.4.1"/>
-	<property name="cob.instrumented.dir" value="${coverage.dir}/instrumented"/>
-	<property name="cobertura.datafile" value="cobertura.ser"/>
-	<path id="cobertura.classpath">
-		<fileset dir="${cobertura.dir}">
-			<include name="cobertura.jar"/>
-			<include name="lib/**/*.jar"/>
-		</fileset>
-	</path>
-	<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 	
 	<!-- Use correct swt jar depending on operating system -->
 	<condition property="swt.jar" value="swt-linux.jar">
@@ -111,7 +93,7 @@
 		<copy file="${swtmodel.project.dir}/dist/swtmodel.jar" todir="${lib.dir}"/>
 	</target>
 	
-	<target name="run" depends="build,build-tests" description="Run the ripper">
+	<target name="run" depends="build" description="Run the ripper">
 		<echo message="Arguments passed to SWTRipperMain: ${args}"/>
 		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
 			<!-- Sample arguments: <arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>-->
@@ -119,75 +101,7 @@
 			<classpath refid="SWTRipper.classpath"/>
 			<classpath path="${test.build.dir}"/>
 		</java>
-	</target>
-		
-	<target name="test" depends="unit-test"/>
-	
-	<target name="init-test">
-		<mkdir dir="${test.build.dir}"/>
-		<copy includeemptydirs="false" todir="${test.build.dir}">
-            <fileset dir="${test.src.dir}">
-                <exclude name="**/*.launch"/>
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-	</target>
-	
-	<target name="build-tests" depends="build,init-test">
-		<javac debug="true" debuglevel="${debuglevel}" destdir="${test.build.dir}" source="${source}" target="${target}">
-            <src path="${test.src.dir}"/>
-            <classpath>
-            	<path refid="SWTRipper.classpath"/>
-            	<pathelement location="${junit.jar}"/>
-        	</classpath>
-        </javac>
-	</target>
-	
-	<target name="unit-test" description="Run unit tests" depends="init-test,build-tests,instrument">
-		<mkdir dir="${test.out.dir}"/>
-		
-		<!-- must fork for cobertura, see http://cobertura.sourceforge.net/anttaskreference.html -->
-		<junit fork="yes" forkmode="once" printsummary="true">
-			<sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}"/>
-			
-			<!-- must specify instrumented classes before original ones! -->
-			<classpath location="${cob.instrumented.dir}"/>
-			<classpath location="${cob.instrumented.dir}/${swtmodel.jar.name}"/>
-			<classpath>
-				<pathelement location="${junit.jar}"/>
-				<path refid="SWTRipper.classpath"/>
-				<pathelement path="${test.build.dir}"/>
-			</classpath>
-			<classpath refid="cobertura.classpath"/>
-			
-			<batchtest todir="${test.out.dir}">
-				<fileset dir="${test.build.dir}">
-					<include name="**/*Test.class"/>
-				</fileset>
-				<formatter type="xml"/>
-			</batchtest>
-		</junit>
-	</target>
-	
-	<target name="instrument" depends="build">
-		<mkdir dir="${cob.instrumented.dir}"/>		
-		<cobertura-instrument todir="${cob.instrumented.dir}">
-			<fileset dir="${build.dir}">
-				<include name="**/*.class"/>
-			</fileset>
-			<fileset file="${swtmodel.jar}"/>
-		</cobertura-instrument>
-	</target>
-	
-	<target name="coverage-report" depends="unit-test">
-		<!-- don't bother specifying src of model, that's only used for complexity and html reports -->
-		<cobertura-report format="xml" srcdir="${src.dir}" destdir="${coverage.dir}" datafile="${cobertura.datafile}"/>
-		
-		<!-- Move cobertura.ser to coverage directory. Cobertura fails if
-			 cobertua.ser isn't in base directory (even though they claim it
-			 can handle that) so copy it after it's done reading it -->
-		<move file="${cobertura.datafile}" todir="${coverage.dir}"/>
-	</target>
+	</target>		
 	
 	<target name="findbugs" depends="build">
 		<!-- See http://cfunit.sourceforge.net/help-antview.php if you get an Eclipse warning about an unknown taskdef -->
@@ -202,12 +116,6 @@
 	<target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
-		<delete dir="${test.build.dir}"/>
-		<delete dir="${test.out.dir}"/>
-		<delete dir="${cob.instrumented.dir}"/>
-		<delete file="${coverage.dir}/${cobertura.datafile}"/>
-		<delete file="${coverage.dir}/coverage.xml"/>
-		<delete file="${cobertura.datafile}"/> <!-- this sometimes gets left over -->
 		<delete file="${findbugs.out}"/>
 		<delete>
 			<fileset dir="." includes="*.log"/>
