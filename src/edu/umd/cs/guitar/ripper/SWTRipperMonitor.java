@@ -22,6 +22,7 @@ import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.event.SWTEventHandler;
 import edu.umd.cs.guitar.exception.ApplicationConnectException;
+import edu.umd.cs.guitar.internal.SWTGlobals;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
@@ -223,6 +224,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			}
 		});
 		GUITARLog.log.info("Display disposed");
+		SWTGlobals.rootSeen = false; // TODO remove this when we figure out a better way to do this
 	}
 
 	@Override
