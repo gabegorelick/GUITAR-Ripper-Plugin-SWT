@@ -17,16 +17,7 @@
 	<property name="swtmodel.jar.name" value="swtmodel.jar"/>
 	<property name="swtmodel.jar" value="${lib.dir}/${swtmodel.jar.name}"/>
 	<property name="swtripper.jar" value="${dist.dir}/swtripper.jar"/>
-	<property name="findbugs.home" value="${lib.dir}/findbugs-1.3.9"/>
-	<property name="findbugs.out" value="${lib.dir}/ripper-fb.xml"/>
-	<path id="findbugs.classpath">
-		<fileset dir="${findbugs.home}">
-			<!-- this is why you should have something manage dependencies like maven,
-				 it's such a waste to have all that cruft on the classpath -->
-			<include name="**/*.jar"/>
-		</fileset>
-	</path>
-	
+		
 	<!-- Use correct swt jar depending on operating system -->
 	<condition property="swt.jar" value="swt-linux.jar">
 		<and>
@@ -89,7 +80,7 @@
 	
 	<!-- Build and copy swtmodel.jar unless it's already here -->
 	<target name="build-model" depends="check-model" description="Build SWTModel and copy" unless="swtmodel.present">
-		<ant antfile="build.xml" dir="${swtmodel.project.dir}" target="dist"/>
+		<ant antfile="build.xml" dir="${swtmodel.project.dir}" target="dist" inheritall="false"/>
 		<copy file="${swtmodel.project.dir}/dist/swtmodel.jar" todir="${lib.dir}"/>
 	</target>
 	
@@ -102,21 +93,10 @@
 			<classpath path="${test.build.dir}"/>
 		</java>
 	</target>		
-	
-	<target name="findbugs" depends="build">
-		<!-- See http://cfunit.sourceforge.net/help-antview.php if you get an Eclipse warning about an unknown taskdef -->
-		<taskdef name="findbugs" classpathref="findbugs.classpath" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"/>
-		<findbugs home="${findbugs.home}" output="xml" outputFile="${findbugs.out}">
-			<sourcePath path="${src.dir}"/>
-			<class location="${build.dir}"/>
-			<auxclasspath refid="SWTRipper.classpath"/>
-		</findbugs>
-	</target>
-				
+					
 	<target name="clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>
-		<delete file="${findbugs.out}"/>
 		<delete>
 			<fileset dir="." includes="*.log"/>
 		</delete>

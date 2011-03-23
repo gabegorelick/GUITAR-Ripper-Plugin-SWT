@@ -9,8 +9,7 @@
 # Should always build model from source
 /lib/swtmodel.jar
 
-# FindBugs output
-/test/ripper-fb.xml
+/dist
 
 /test/bin
 
