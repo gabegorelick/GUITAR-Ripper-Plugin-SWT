@@ -65,23 +65,24 @@ import edu.umd.cs.guitar.util.GUITARLog;
  */
 public class SWTRipper {
 
-	SWTRipperConfiguration CONFIG;
-	
-	private Thread appThread;
+	private final SWTRipperConfiguration config;
+	private final Thread appThread;
 
 	/**
-	 * @param CONFIG
+	 * Constructs a new <code>SWTRipper</code>. The thread passed in is the
+	 * thread on which the SWT application under test runs. This is almost 
+	 * always the main thread and actually must be the main thread on Cocoa.
+	 * 
+	 * @param config
+	 * @param appThread thread the application under test runs on
 	 */
-	public SWTRipper(SWTRipperConfiguration CONFIG, Thread appThread) {
+	public SWTRipper(SWTRipperConfiguration config, Thread appThread) {
 		super();
-		this.CONFIG = CONFIG;
+		this.config = config;
 		this.appThread = appThread;
 	}
 	
-	public Thread getAppThread() {
-		return appThread;
-	}
-
+	
 	// Logger logger;
 
 	/**
@@ -92,11 +93,11 @@ public class SWTRipper {
 	Ripper ripper;
 
 	public void execute() throws CmdLineException {
-		if (CONFIG.help) {
+		if (config.help) {
 			throw new CmdLineException("");
 		}
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY,
-				CONFIG.getLogFile());
+				config.getLogFile());
 		// PropertyConfigurator.configure(SWTConstants.LOG4J_PROPERTIES_FILE);
 		// URL logFile = this.getClass().getClassLoader().getResource(
 		// SWTConstants.LOG4J_PROPERTIES_FILE);
@@ -122,15 +123,15 @@ public class SWTRipper {
 		}
 
 		GUIStructure dGUIStructure = ripper.getResult();
-		IO.writeObjToFile(dGUIStructure, CONFIG.getGuiFile());
+		IO.writeObjToFile(dGUIStructure, config.getGuiFile());
 
 		GUITARLog.log.info("-----------------------------");
 		GUITARLog.log.info("OUTPUT SUMARY: ");
 		GUITARLog.log.info("Number of Windows: "
 				+ dGUIStructure.getGUI().size());
-		GUITARLog.log.info("GUI file:" + CONFIG.getGuiFile());
+		GUITARLog.log.info("GUI file:" + config.getGuiFile());
 		GUITARLog.log.info("Open Component file:"
-				+ CONFIG.getLogWidgetFile());
+				+ config.getLogWidgetFile());
 		ComponentListType lOpenWins = ripper.getlOpenWindowComps();
 		ComponentListType lCloseWins = ripper.getlCloseWindowComp();
 		ObjectFactory factory = new ObjectFactory();
@@ -139,7 +140,7 @@ public class SWTRipper {
 		logWidget.setOpenWindow(lOpenWins);
 		logWidget.setCloseWindow(lCloseWins);
 
-		IO.writeObjToFile(logWidget, CONFIG.getLogWidgetFile());
+		IO.writeObjToFile(logWidget, config.getLogWidgetFile());
 
 		// ------------------
 		// Elapsed time:
@@ -148,7 +149,7 @@ public class SWTRipper {
 		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		GUITARLog.log.info("Ripping Elapsed: " + df.format(nDuration));
-		GUITARLog.log.info("Log file: " + CONFIG.getLogFile());
+		GUITARLog.log.info("Log file: " + config.getLogFile());
 	}
 
 	/**
@@ -167,12 +168,12 @@ public class SWTRipper {
 
 		try {
 			conf = (Configuration) IO.readObjFromFile(
-					CONFIG.getConfigFile(), Configuration.class);
+					config.getConfigFile(), Configuration.class);
 
 			if (conf == null) {
 				InputStream in = getClass()
 						.getClassLoader()
-						.getResourceAsStream(CONFIG.getConfigFile());
+						.getResourceAsStream(config.getConfigFile());
 				conf = (Configuration) IO.readObjFromFile(in,
 						Configuration.class);
 			}
@@ -243,7 +244,15 @@ public class SWTRipper {
 	}
 	
 	public GRipperMonitor getMonitor() {
-		return new SWTRipperMonitor(CONFIG, appThread);
+		return new SWTRipperMonitor(config, appThread);
+	}
+	
+	public SWTRipperConfiguration getConfiguration() {
+		return config;
+	}
+	
+	public Thread getAppThread() {
+		return appThread;
 	}
 
 }
