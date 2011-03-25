@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <project basedir="." default="build" name="SWTRipper">
-	
+
 	<property file="build.properties"/>
-	
-    <property environment="env"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
-    <property name="source" value="1.6"/>
-	
+
+	<property environment="env"/>
+	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="target" value="1.6"/>
+	<property name="source" value="1.6"/>
+
 	<!-- we may want to pull these out into a properties file eventually -->
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
@@ -17,14 +17,14 @@
 	<property name="swtmodel.jar.name" value="swtmodel.jar"/>
 	<property name="swtmodel.jar" value="${lib.dir}/${swtmodel.jar.name}"/>
 	<property name="swtripper.jar" value="${dist.dir}/swtripper.jar"/>
-		
+
 	<!-- Use correct swt jar depending on operating system -->
 	<condition property="swt.jar" value="swt-linux.jar">
 		<and>
-		    <os family="unix"/>
-		    <not>
-		      <os family="mac"/>
-		    </not>
+			<os family="unix"/>
+			<not>
+				<os family="mac"/>
+			</not>
 		</and>
 	</condition>
 	<condition property="swt.jar" value="swt-mac.jar">
@@ -33,78 +33,88 @@
 	<condition property="swt.jar" value="swt-windows.jar">
 		<os family="windows"/>
 	</condition>
-		
-    <path id="SWTRipper.classpath">
-        <pathelement location="${build.dir}"/>
-        <pathelement location="${lib.dir}/args4j-2.0.12.jar"/>
-        <pathelement location="${lib.dir}/${swt.jar}"/>
-        <pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
-        <pathelement location="${lib.dir}/GUITARModel-Core.jar"/>
-        <pathelement location="${lib.dir}/GUIRipper-Core.jar"/>
-        
-        <!-- swtmodel.jar is currently copied from the ripper job by Jenkins at runtime -->
-        <!-- TODO when we do a release, make sure we include swtmodel.jar in lib directly so that it can build without Jenkins -->
-    	<pathelement location="${swtmodel.jar}"/>
-    </path>
-    
-    <target name="init">
-        <mkdir dir="${build.dir}"/>
-        <copy includeemptydirs="false" todir="${build.dir}">
-            <fileset dir="${src.dir}">
-                <exclude name="**/*.launch"/>
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    </target>
-        
+
+	<path id="SWTRipper.classpath">
+		<pathelement location="${build.dir}"/>
+		<pathelement location="${lib.dir}/args4j-2.0.12.jar"/>
+		<pathelement location="${lib.dir}/${swt.jar}"/>
+		<pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
+		<pathelement location="${lib.dir}/GUITARModel-Core.jar"/>
+		<pathelement location="${lib.dir}/GUIRipper-Core.jar"/>
+
+		<!-- swtmodel.jar is currently copied from the ripper job by Jenkins at runtime -->
+		<!-- TODO when we do a release, make sure we include swtmodel.jar in lib directly so that it can build without Jenkins -->
+		<pathelement location="${swtmodel.jar}"/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<copy includeemptydirs="false" todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.launch"/>
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="build" depends="init,build-model">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" source="${source}" target="${target}">
-            <src path="${src.dir}"/>
-            <classpath refid="SWTRipper.classpath"/>
-        </javac>
-    </target>
-	
-    <target name="dist" depends="build" description="Build a JAR of this project">
+		<echo message="${ant.project.name}: ${ant.file}"/>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" source="${source}" target="${target}">
+			<src path="${src.dir}"/>
+			<classpath refid="SWTRipper.classpath"/>
+		</javac>
+	</target>
+
+	<target name="dist" depends="build" description="Build a JAR of this project">
 		<mkdir dir="${dist.dir}"/>
 		<jar destfile="${swtripper.jar}">
 			<fileset dir="${build.dir}"/>
 		</jar>
 	</target>
-	
+
 	<target name="check-model" description="Check if SWTModel is in lib">
 		<!-- set swtmodel.present if swtmodel.jar is in lib, 
 			 this has the effect of checking whether this is a Jenkins build-->
 		<available file="${swtmodel.jar}" property="swtmodel.present"/>
 	</target>
-	
+
 	<!-- Build and copy swtmodel.jar unless it's already here -->
 	<target name="build-model" depends="check-model" description="Build SWTModel and copy" unless="swtmodel.present">
 		<ant antfile="build.xml" dir="${swtmodel.project.dir}" target="dist" inheritall="false"/>
 		<copy file="${swtmodel.project.dir}/dist/swtmodel.jar" todir="${lib.dir}"/>
 	</target>
-	
+
 	<target name="run" depends="build" description="Run the ripper">
 		<echo message="Arguments passed to SWTRipperMain: ${args}"/>
 		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
 			<!-- Sample arguments: <arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>-->
 			<arg line="${args}"/>
 			<classpath refid="SWTRipper.classpath"/>
-			<classpath path="${test.build.dir}"/>
 		</java>
-	</target>		
-					
+	</target>
+
+	<target name="run-sample" depends="build" description="Rip a sample app included in GUITAR-Ripper-Plugin-SWT-Test">
+		<echo message="Arguments passed to SWTRipperMain: ${args}"/>
+		<ant antfile="build.xml" dir="${swttest.project.dir}" target="build" inheritall="false"/>
+		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
+			<!-- Sample arguments: <arg line="-c edu.umd.cs.guitar.ripper.test.aut.SWTHelloWorld"/>-->
+			<arg line="${args}" />
+			<classpath refid="SWTRipper.classpath" />
+			<classpath path="${swttest.project.dir}/${build.dir}" />
+		</java>
+	</target>
+
 	<target name="clean">
-        <delete dir="${build.dir}"/>
-        <delete dir="${dist.dir}"/>
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
 		<delete>
-			<fileset dir="." includes="*.log"/>
+			<fileset dir="." includes="*.log" />
 		</delete>
-		<delete file="GUITAR-Default.GUI"/>
-		<delete file="log_widget.xml"/>
-        <!-- remove swtmodel.jar so Jenkins can add a potentially newer version -->
-        <!-- TODO remove this when we release -->
-        <delete file="${swtmodel.jar}"/>
-    </target>
-            
+		<delete file="GUITAR-Default.GUI" />
+		<delete file="log_widget.xml" />
+		<!-- remove swtmodel.jar so Jenkins can add a potentially newer version -->
+		<!-- TODO remove this when we release -->
+		<delete file="${swtmodel.jar}"/>
+	</target>
+
 </project>
