@@ -44,23 +44,24 @@ public class SWTRipperMain {
      * @param args
      */
     public static void main(String[] args) {
-//        SWTRipperConfiguration configuration = new SWTRipperConfiguration();
-//        CmdLineParser parser = new CmdLineParser(configuration);
-//        final SWTRipper swtRipper = new SWTRipper(configuration);
-//
-//        try {
-//            // parser.setUsageWidth(Integer.MAX_VALUE);
-//            parser.parseArgument(args);
-//            swtRipper.execute();
-//        } catch (CmdLineException e) {
-//            System.err.println(e.getMessage());
-//            System.err.println();
-//            System.err.println("Usage: java [JVM options] "
-//                    + SWTRipperMain.class.getName() + " [Ripper options] \n");
-//            System.err.println("where [Ripper options] include:");
-//            System.err.println();
-//            parser.printUsage(System.err);
-//        }
-//        System.exit(0);
+        SWTRipperConfiguration configuration = new SWTRipperConfiguration();
+        CmdLineParser parser = new CmdLineParser(configuration);
+        final SWTRipper swtRipper = new SWTRipper(configuration, Thread.currentThread());
+        
+        SWTRipperRunner runner = new SWTRipperRunner(swtRipper);
+        
+        try {
+            // parser.setUsageWidth(Integer.MAX_VALUE);
+            parser.parseArgument(args);
+            runner.start();
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println();
+            System.err.println("Usage: java [JVM options] "
+                    + SWTRipperMain.class.getName() + " [Ripper options] \n");
+            System.err.println("where [Ripper options] include:");
+            System.err.println();
+            parser.printUsage(System.err);
+        }
     }
 }
