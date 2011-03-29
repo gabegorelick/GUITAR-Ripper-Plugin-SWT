@@ -6,8 +6,8 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar"/>
 	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar"/>
+	<classpathentry kind="lib" path="lib/swt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/swt-windows.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
