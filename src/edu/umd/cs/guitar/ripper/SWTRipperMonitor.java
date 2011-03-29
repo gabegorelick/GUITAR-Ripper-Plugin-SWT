@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
+import edu.umd.cs.guitar.event.SWTActionEDT;
 import edu.umd.cs.guitar.event.SWTEventHandler;
 import edu.umd.cs.guitar.exception.ApplicationConnectException;
 import edu.umd.cs.guitar.internal.SWTGlobals;
@@ -283,6 +284,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 */
 	@Override
 	public void expandGUI(GComponent component) {
+		GEvent action = new SWTActionEDT();
+		action.perform(component, null);
 		// JFCXComponent jComponent = (JFCXComponent) component;
 		// Accessible aComponent = jComponent.getAComponent();
 		// GComponent gComponent = new JFCXComponent(aComponent);
@@ -355,10 +358,10 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		String ID = gComponent.getTitle();
 		if (ID == null)
 			return false;
-
+		/*
 		if ("".equals(ID)) // TODO fix title getting
 			return false;
-
+		*/
 		if (!gComponent.isEnable()) {
 			GUITARLog.log.debug("Component is disabled");
 			return false;
@@ -370,7 +373,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 		if (gComponent.getTypeVal().equals(GUITARConstants.TERMINAL))
 			return false;
-
+		
 		return true;
 	}
 
