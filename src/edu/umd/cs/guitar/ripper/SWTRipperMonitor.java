@@ -255,8 +255,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		SWTWindow sWindow = (SWTWindow) gWindow;
 		final Shell shell = sWindow.getShell();
 
-		// TODO: A bug might happen here, will fix later
-		// window.setVisible(false);
 		shell.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
