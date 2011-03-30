@@ -89,8 +89,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		}
 		
 		try {
-			application = new SWTApplication(configuration.getMainClass(),
-					URLs, appThread);
+			application = new SWTApplication(configuration.getMainClass(), URLs, appThread);
+			application.setArgsToApp(parseArgumentList());
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -188,30 +188,24 @@ public class SWTRipperMonitor extends GRipperMonitor {
 //			application = new SWTApplication(configuration.getMainClass(),
 //					URLs);
 
-			// Parsing arguments
-			String[] args;
-			if (configuration.getArgumentList() != null)
-				args = configuration.getArgumentList()
-						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-			else
-				args = new String[0];
-
-			application.connect(args);
-
-			// Delay ... we don't know why this was necessary
-			// Internally in the preceding connect() call, we do another delay
-			// try {
-			// GUITARLog.log
-			// .info("Initial waiting: "
-			// + SWTRipperConfiguration.INITIAL_WAITING_TIME
-			// + "ms...");
-			// Thread.sleep(SWTRipperConfiguration.INITIAL_WAITING_TIME);
-			// } catch (InterruptedException e) {
-			// GUITARLog.log.error(e);
-			// }
-
+			application.connect();
 		} catch (ApplicationConnectException e) {
 			GUITARLog.log.error(e);
+		}
+	}
+	
+	/**
+	 * Convert <code>String</code> of
+	 * {@link GUITARConstants.CMD_ARGUMENT_SEPERATOR}-separated arguments from
+	 * {@link SWTRipperConfiguration} into an array of <code>Strings</code>.
+	 * 
+	 * @return array of arguments to be passed to the SWT application
+	 */
+	private String[] parseArgumentList() {
+		if (configuration.getArgumentList() != null) {
+			return configuration.getArgumentList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+		} else {
+			return new String[0];
 		}
 	}
 
