@@ -104,6 +104,18 @@
 		</java>
 	</target>
 
+	<target name="run-sample-mac" depends="build" description="Rip a sample app included in GUITAR-Ripper-Plugin-SWT-Test on OS X">
+		<echo message="Arguments passed to SWTRipperMain: ${args}" />
+		<ant antfile="build.xml" dir="${swttest.project.dir}" target="build" inheritall="false" />
+		<java classname="edu.umd.cs.guitar.ripper.SWTRipperMain" fork="true">
+			<arg line="${args}" />
+			<jvmarg value="-d32" />
+			<jvmarg value="-XstartOnFirstThread" />
+			<classpath refid="SWTRipper.classpath" />
+			<classpath path="${swttest.project.dir}/${build.dir}" />
+		</java>
+	</target>
+
 	<target name="clean">
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
