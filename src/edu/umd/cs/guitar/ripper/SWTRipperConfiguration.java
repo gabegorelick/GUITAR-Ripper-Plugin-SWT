@@ -72,9 +72,6 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
     @Option(name = "-u", usage = "URLs for the Application Under Test, separated by a colon (:) ", aliases = "--urls")
     private String urlList;
 
-    @Option(name = "-j", usage = "Java Virtual Machine options for the Application Under Test", aliases = "--jvm-options")
-    private String jvmOptions;
-
     @Option(name = "-cf", usage = "Configure file for the ripper defining terminal, ignored components and ignored windows", aliases = "--configure-file")
     private String configFile = //"resources" + File.separator + "config"
            // + File.separator + 
@@ -131,20 +128,13 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
 		return argumentList;
 	}
 
+	// TODO use Args4j option handlers to make this array of URLs instead
 	public void setUrlList(String urlList) {
 		this.urlList = urlList;
 	}
 
 	public String getUrlList() {
 		return urlList;
-	}
-
-	public void setJvmOptions(String jvmOptions) {
-		this.jvmOptions = jvmOptions;
-	}
-
-	public String getJvmOptions() {
-		return jvmOptions;
 	}
 
 	public void setConfigFile(String configFile) {
