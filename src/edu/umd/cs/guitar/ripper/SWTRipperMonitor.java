@@ -10,11 +10,11 @@
 package edu.umd.cs.guitar.ripper;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
@@ -22,7 +22,6 @@ import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.event.SWTActionEDT;
 import edu.umd.cs.guitar.event.SWTEventHandler;
-import edu.umd.cs.guitar.exception.ApplicationConnectException;
 import edu.umd.cs.guitar.internal.SWTGlobals;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
@@ -44,75 +43,87 @@ import edu.umd.cs.guitar.util.GUITARLog;
  */
 public class SWTRipperMonitor extends GRipperMonitor {
 
-	SWTApplication application;
-	
-	// thread application is running on
-	private Thread appThread;
-	
-	private final Display display;
-	
-	// Logger logger;
-	SWTRipperConfiguration configuration;
+	private SWTApplication application;
+	private SWTRipperConfiguration configuration;
 
-	List<String> sRootWindows = new ArrayList<String>();
+	private List<String> sRootWindows = new ArrayList<String>();
 
-	List<String> sIgnoreWindowList = new ArrayList<String>();
+	private List<String> sIgnoreWindowList = new ArrayList<String>();
 
 	/**
 	 * Temporary list of windows opened during the expand event is being
 	 * performed. Those windows are in a native form to prevent data loss.
 	 * 
 	 */
-	volatile LinkedList<Shell> tempOpenedWinStack = new LinkedList<Shell>();
+	private volatile LinkedList<Shell> tempOpenedWinStack = new LinkedList<Shell>();
 
-	volatile LinkedList<Shell> tempClosedWinStack = new LinkedList<Shell>();
+	private volatile LinkedList<Shell> tempClosedWinStack = new LinkedList<Shell>();
+
+	/**
+	 * Construct a new <code>SWTRipperMonitor</code>. This constructor is
+	 * equivalent to
+	 * <code>SWTRipperMonitor(configuration, Thread.getCurrentThread())</code>.
+	 * Consequently, this constructor must be called on the same thread that the
+	 * application under test is running on (usually the <code>main</code>
+	 * thread).
+	 * 
+	 * @param configuration
+	 *            ripper configuration
+	 */
+	public SWTRipperMonitor(SWTRipperConfiguration configuration) {
+		this(configuration, Thread.currentThread());
+	}
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param configuration
 	 *            ripper configuration
+	 * @param appThread
+	 *            thread the SWT GUI is running on (almost always the
+	 *            <code>main</code> thread)
 	 */
 	public SWTRipperMonitor(SWTRipperConfiguration configuration, Thread appThread) {
 		super();
-		// this.logger = logger;
+		
+		if (configuration == null) {
+			configuration = new SWTRipperConfiguration();
+		}
+		
 		this.configuration = configuration;
 		
-		this.appThread = appThread;
-		
+		// don't store application.getDisplay because it's still null at this point
+				
 		String[] URLs;
-		if (configuration.getUrlList() != null)
-			URLs = configuration.getUrlList()
-					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		else {
+		if (configuration.getUrlList() != null) {
+			URLs = configuration.getUrlList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+		} else {
 			URLs = new String[0];
 		}
 		
 		try {
-			application = new SWTApplication(configuration.getMainClass(), URLs, appThread);
+			application = new SWTApplication(configuration.getMainClass(), appThread);
 			application.setArgsToApp(parseArgumentList());
-			
+			for (String s : URLs) {
+				application.addURL(new URL(s));
+			}			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) { // TODO handle these farther up the chain
-			e.printStackTrace();
-		}
-		
-		display = application.getDisplay();
+		} 
 	}
 
 	@Override
 	public List<GWindow> getRootWindows() {
 		final List<GWindow> retWindowList = new ArrayList<GWindow>();
 				
-		display.syncExec(new Runnable() {
+		application.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				if (display.isDisposed()) {
+				if (application.getDisplay().isDisposed()) {
 					throw new AssertionError("display is disposed");
 				}
 				
-				for (Shell shell : display.getShells()) {
+				for (Shell shell : application.getDisplay().getShells()) {
 					if (!isValidRootWindow(shell)) {
 						continue;
 					}
@@ -176,22 +187,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		// Set up parameters
 		sIgnoreWindowList = SWTConstants.sIgnoredWins;
 
-		// Start the application
-		try {
-//			String[] URLs;
-//			if (configuration.getUrlList() != null)
-//				URLs = configuration.getUrlList()
-//						.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-//			else
-//				URLs = new String[0];
-
-//			application = new SWTApplication(configuration.getMainClass(),
-//					URLs);
-
-			application.connect();
-		} catch (ApplicationConnectException e) {
-			GUITARLog.log.error(e);
-		}
+		// sleep until application is ready
+		application.connect();
 	}
 	
 	/**
@@ -211,11 +208,10 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void cleanUp() {
-		// remove this if you get deadlock, works sometimes though
-		display.syncExec(new Runnable() {
+		application.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				display.dispose();
+				application.getDisplay().dispose();
 			}
 		});
 		GUITARLog.log.info("Display disposed");
@@ -278,29 +274,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	public void expandGUI(GComponent component) {
 		GEvent action = new SWTActionEDT();
 		action.perform(component, null);
-		// JFCXComponent jComponent = (JFCXComponent) component;
-		// Accessible aComponent = jComponent.getAComponent();
-		// GComponent gComponent = new JFCXComponent(aComponent);
-
-		// if (component == null)
-		// return;
-
-		// GUITARLog.log.info("Expanding *" + component.getTitle() + "*...");
-
-		// GThreadEvent action = new JFCActionHandler();
-		// GEvent action = new JFCActionEDT();
-
-		// action.perform(component, null);
-		// GUITARLog.log.info("Waiting  " + configuration.DELAY
-		// + "ms for a new window to open");
-
-		// new QueueTool().waitEmpty(configuration.DELAY);
-		// new EventTool().waitNoEvent(configuration.DELAY);
-
-		// try {
-		// Thread.sleep(configuration.DELAY);
-		// } catch (InterruptedException e) {
-		// }
 	}
 
 	/**
@@ -379,14 +352,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 				retWindows.addLast(gWindow);
 		}
 		return retWindows;
-	}
-
-	public void setAppThread(Thread appThread) {
-		this.appThread = appThread;
-	}
-
-	public Thread getAppThread() {
-		return appThread;
 	}
 	
 	public SWTApplication getApplication() {

@@ -66,8 +66,21 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class SWTRipper {
 
 	private final SWTRipperConfiguration config;
-	private final Thread appThread;
+	private final SWTRipperMonitor monitor;
 
+	/**
+	 * Constructs a new <code>SWTRipper</code>. This constructor is equivalent 
+	 * to <code>SWTRipper(config, Thread.currentThread())</code>. Consequently,
+	 * this constructor must be called on the same thread that the application
+	 * under test is running on (usually the <code>main</code> thread). 
+	 * 
+	 * @param config
+	 * @param appThread thread the application under test runs on
+	 */
+	public SWTRipper(SWTRipperConfiguration config) {
+		this(config, Thread.currentThread());
+	}
+	
 	/**
 	 * Constructs a new <code>SWTRipper</code>. The thread passed in is the
 	 * thread on which the SWT application under test runs. This is almost 
@@ -78,87 +91,74 @@ public class SWTRipper {
 	 */
 	public SWTRipper(SWTRipperConfiguration config, Thread appThread) {
 		super();
+		
+		if (config == null) {
+			config = new SWTRipperConfiguration();
+		}
+		
 		this.config = config;
-		this.appThread = appThread;
+		monitor = new SWTRipperMonitor(config, appThread);
 	}
 	
-	
-	// Logger logger;
-
 	/**
-	 * Execute the jfc ripper
+	 * Execute the SWT ripper.
 	 * 
 	 * @throws CmdLineException
 	 */
-	Ripper ripper;
-
 	public void execute() throws CmdLineException {
 		if (config.help) {
 			throw new CmdLineException("");
 		}
+		
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY,
 				config.getLogFile());
-		// PropertyConfigurator.configure(SWTConstants.LOG4J_PROPERTIES_FILE);
-		// URL logFile = this.getClass().getClassLoader().getResource(
-		// SWTConstants.LOG4J_PROPERTIES_FILE);
-		// PropertyConfigurator.configure(logFile);
-
-		// org.apache.log4j.helpers.Loader.getResource(resource, Logger.class)
-
-		// GUITARLog.log =
-		// Logger.getLogger(JFCRipperMain.class.getSimpleName());
+		
 		long nStartTime = System.currentTimeMillis();
-		ripper = new Ripper(GUITARLog.log);
+		Ripper ripper = new Ripper(GUITARLog.log);
 
 		// -------------------------
 		// Setup configuration
 		// -------------------------
 
 		try {
-			setupEnv();
+			setupEnv(ripper);
 			ripper.execute();
+			
+			GUIStructure dGUIStructure = ripper.getResult();
+			IO.writeObjToFile(dGUIStructure, config.getGuiFile());
+
+			GUITARLog.log.info("-----------------------------");
+			GUITARLog.log.info("OUTPUT SUMARY: ");
+			GUITARLog.log.info("Number of Windows: "
+					+ dGUIStructure.getGUI().size());
+			GUITARLog.log.info("GUI file:" + config.getGuiFile());
+			GUITARLog.log.info("Open Component file:"
+					+ config.getLogWidgetFile());
+			ComponentListType lOpenWins = ripper.getlOpenWindowComps();
+			ComponentListType lCloseWins = ripper.getlCloseWindowComp();
+			ObjectFactory factory = new ObjectFactory();
+
+			LogWidget logWidget = factory.createLogWidget();
+			logWidget.setOpenWindow(lOpenWins);
+			logWidget.setCloseWindow(lCloseWins);
+
+			IO.writeObjToFile(logWidget, config.getLogWidgetFile());
+
+			// ------------------
+			// Elapsed time:
+			long nEndTime = System.currentTimeMillis();
+			long nDuration = nEndTime - nStartTime;
+			DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
+			df.setTimeZone(TimeZone.getTimeZone("GMT"));
+			GUITARLog.log.info("Ripping Elapsed: " + df.format(nDuration));
+			GUITARLog.log.info("Log file: " + config.getLogFile());
 		} catch (Exception e) {
-			GUITARLog.log.error("JFCRipper: ", e);
-			System.exit(1);
+			GUITARLog.log.error("SWTRipper: ", e);
 		}
-
-		GUIStructure dGUIStructure = ripper.getResult();
-		IO.writeObjToFile(dGUIStructure, config.getGuiFile());
-
-		GUITARLog.log.info("-----------------------------");
-		GUITARLog.log.info("OUTPUT SUMARY: ");
-		GUITARLog.log.info("Number of Windows: "
-				+ dGUIStructure.getGUI().size());
-		GUITARLog.log.info("GUI file:" + config.getGuiFile());
-		GUITARLog.log.info("Open Component file:"
-				+ config.getLogWidgetFile());
-		ComponentListType lOpenWins = ripper.getlOpenWindowComps();
-		ComponentListType lCloseWins = ripper.getlCloseWindowComp();
-		ObjectFactory factory = new ObjectFactory();
-
-		LogWidget logWidget = factory.createLogWidget();
-		logWidget.setOpenWindow(lOpenWins);
-		logWidget.setCloseWindow(lCloseWins);
-
-		IO.writeObjToFile(logWidget, config.getLogWidgetFile());
-
-		// ------------------
-		// Elapsed time:
-		long nEndTime = System.currentTimeMillis();
-		long nDuration = nEndTime - nStartTime;
-		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		GUITARLog.log.info("Ripping Elapsed: " + df.format(nDuration));
-		GUITARLog.log.info("Log file: " + config.getLogFile());
 	}
 
-	/**
-     * 
-     */
-	/**
-	 * 
-	 */
-	private void setupEnv() {
+	
+	private void setupEnv(Ripper ripper) {
 		// --------------------------
 		// Terminal list
 
@@ -179,8 +179,7 @@ public class SWTRipper {
 			}
 
 		} catch (Exception e) {
-			GUITARLog.log.error("No configuration file. Using an empty one...");
-			// return;
+			GUITARLog.log.info("No configuration file. Using an empty one...");
 		}
 
 		if (conf == null) {
@@ -207,7 +206,7 @@ public class SWTRipper {
 
 		ComponentListType ignoredAll = conf.getIgnoredComponents();
 
-		if (ignoredAll != null)
+		if (ignoredAll != null) {
 			for (FullComponentType fullComp : ignoredAll.getFullComponent()) {
 				ComponentType comp = fullComp.getComponent();
 
@@ -218,12 +217,15 @@ public class SWTRipper {
 							win);
 					String sWindowTitle = winAdapter
 							.getFirstValueByName(GUITARConstants.TITLE_TAG_NAME);
-					if (sWindowTitle != null)
+					if (sWindowTitle != null) {
 						SWTConstants.sIgnoredWins.add(sWindowTitle);
+					}
 
-				} else
+				} else {
 					lIgnoredComps.add(fullComp);
+				}
 			}
+		}
 
 		// --------------------------
 		// Add ripper.addComponentFilter() calls to ignore components here
@@ -243,16 +245,8 @@ public class SWTRipper {
 		ripper.setIDGenerator(jIDGenerator);
 	}
 	
-	public GRipperMonitor getMonitor() {
-		return new SWTRipperMonitor(config, appThread);
-	}
-	
-	public SWTRipperConfiguration getConfiguration() {
-		return config;
-	}
-	
-	public Thread getAppThread() {
-		return appThread;
+	public SWTRipperMonitor getMonitor() {
+		return monitor;
 	}
 
 }

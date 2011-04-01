@@ -2,6 +2,8 @@ package edu.umd.cs.guitar.ripper;
 
 import org.kohsuke.args4j.CmdLineException;
 
+import edu.umd.cs.guitar.model.SWTApplicationStartException;
+
 /**
  * Convenience class to run {@link SWTRipper}.
  * 
@@ -39,17 +41,20 @@ public class SWTRipperRunner {
 	 */
 	public void start() {
 		ripperThread.start();
-		SWTRipperMonitor monitor = (SWTRipperMonitor) ripper.getMonitor();
+		SWTRipperMonitor monitor = ripper.getMonitor();
 
-		// start GUI on main thread, this blocks until GUI terminates
-		monitor.getApplication().startGUI();
 		try {
+			// start GUI on main thread, this blocks until GUI terminates
+			monitor.getApplication().startGUI();
+
 			// prevent the main thread closing (and thus the JVM) before
 			// the ripper is done
 			ripperThread.join();
+		} catch (SWTApplicationStartException e) {
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 }
