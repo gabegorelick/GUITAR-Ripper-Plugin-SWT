@@ -1,4 +1,6 @@
 /bin
+/dist
+/doc
 
 # build.properties is developer-specific
 /build.properties
@@ -8,18 +10,6 @@
 
 # Should always build model from source
 /lib/swtmodel.jar
-
-/dist
-
-/test/bin
-
-# JUnit results
-/test/testresults
-
-# Cobertura output
-/test/coverage/instrumented
-/test/coverage/cobertura.ser
-/test/coverage/coverage.xml
 
 # Ripper output
 *.log
