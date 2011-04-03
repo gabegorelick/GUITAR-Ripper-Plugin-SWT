@@ -40,6 +40,9 @@ public class SWTRipperRunner {
 	 * on the main thread. The ripper is executed on its own thread.
 	 */
 	public void start() {
+		// ripper shouldn't be preempted by GUI once it's started
+		ripperThread.setPriority(Thread.MAX_PRIORITY);
+		
 		ripperThread.start();
 		SWTRipperMonitor monitor = ripper.getMonitor();
 

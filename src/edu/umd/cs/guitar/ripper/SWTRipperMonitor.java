@@ -266,10 +266,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		return (this.sIgnoreWindowList.contains(sWindow));
 	}
 
-	/**
-	 * TODO: perform actions on the GUI to see if we can expand
-	 * the set of GUI elements
-	 */
+	
 	@Override
 	public void expandGUI(GComponent component) {
 		GEvent action = new SWTActionEDT();
