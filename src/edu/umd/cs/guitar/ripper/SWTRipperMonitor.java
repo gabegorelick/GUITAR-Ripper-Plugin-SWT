@@ -22,7 +22,6 @@ import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.event.SWTActionEDT;
 import edu.umd.cs.guitar.event.SWTEventHandler;
-import edu.umd.cs.guitar.internal.SWTGlobals;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
@@ -159,7 +158,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 		EventManager em = EventManager.getInstance();
 
-		for (Class<? extends SWTEventHandler> event : SWTConstants.DEFAULT_SUPPORTED_EVENTS) {
+		for (Class<? extends GEvent> event : SWTConstants.DEFAULT_SUPPORTED_EVENTS) {
 			em.registerEvent(event);
 		}
 
@@ -215,7 +214,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			}
 		});
 		GUITARLog.log.info("Display disposed");
-		SWTGlobals.rootSeen = false; // TODO remove this when we figure out a better way to do this
+//		SWTGlobals.rootSeen = false;
 	}
 
 	@Override
@@ -254,7 +253,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		shell.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				shell.dispose();
+				// call close instead of dispose so close event is sent
+				shell.close();
 			}
 		});
 	}
@@ -317,13 +317,15 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 		Widget widget = ((SWTWidget) gComponent).getWidget();
 
-		String ID = gComponent.getTitle();
-		if (ID == null)
+		String title = gComponent.getTitle();
+		if (title == null) {
 			return false;
-		/*
-		if ("".equals(ID)) // TODO fix title getting
+		}
+		
+		if (title.isEmpty()) {
 			return false;
-		*/
+		}
+		
 		if (!gComponent.isEnable()) {
 			GUITARLog.log.debug("Component is disabled");
 			return false;
@@ -333,8 +335,9 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			return false;
 		}
 
-		if (gComponent.getTypeVal().equals(GUITARConstants.TERMINAL))
+		if (gComponent.getTypeVal().equals(GUITARConstants.TERMINAL)) {
 			return false;
+		}
 		
 		return true;
 	}
