@@ -52,8 +52,6 @@ import edu.umd.cs.guitar.model.data.LogWidget;
 import edu.umd.cs.guitar.model.data.ObjectFactory;
 import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
 import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
-import edu.umd.cs.guitar.ripper.GRipperMonitor;
-import edu.umd.cs.guitar.ripper.Ripper;
 import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 

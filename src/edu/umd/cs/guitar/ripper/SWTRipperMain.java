@@ -46,13 +46,12 @@ public class SWTRipperMain {
     public static void main(String[] args) {
         SWTRipperConfiguration configuration = new SWTRipperConfiguration();
         CmdLineParser parser = new CmdLineParser(configuration);
-        final SWTRipper swtRipper = new SWTRipper(configuration, Thread.currentThread());
-        
-        SWTRipperRunner runner = new SWTRipperRunner(swtRipper);
         
         try {
-            // parser.setUsageWidth(Integer.MAX_VALUE);
             parser.parseArgument(args);
+                        
+            SWTRipper swtRipper = new SWTRipper(configuration, Thread.currentThread());
+            SWTRipperRunner runner = new SWTRipperRunner(swtRipper);
             runner.start();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
