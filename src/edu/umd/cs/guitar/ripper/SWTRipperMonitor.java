@@ -21,14 +21,13 @@ import org.eclipse.swt.widgets.Widget;
 import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.event.SWTActionEDT;
-import edu.umd.cs.guitar.event.SWTEventHandler;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
 import edu.umd.cs.guitar.model.SWTApplication;
 import edu.umd.cs.guitar.model.SWTConstants;
-import edu.umd.cs.guitar.model.SWTWidget;
 import edu.umd.cs.guitar.model.SWTWindow;
+import edu.umd.cs.guitar.model.swtwidgets.SWTWidget;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -271,6 +270,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	public void expandGUI(GComponent component) {
 		GEvent action = new SWTActionEDT();
 		action.perform(component, null);
+		
+		// no need to wait for action, perform blocks until complete
 	}
 
 	/**
