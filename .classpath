@@ -2,12 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar"/>
+	<classpathentry kind="lib" path="lib/args4j-2.0.12.jar" sourcepath="/home/gabe/.m2/repository/args4j/args4j/2.0.12/args4j-2.0.12-sources.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar"/>
-	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar"/>
-	<classpathentry kind="lib" path="lib/swt"/>
+	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar" sourcepath="/home/gabe/Code/cmsc435/GUITARModel-Core"/>
+	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar" sourcepath="/home/gabe/Code/cmsc435/GUIRipper-Core/src"/>
+	<classpathentry kind="lib" path="lib/swt-linux.jar" sourcepath="/home/gabe/Code/cmsc435/swt-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
