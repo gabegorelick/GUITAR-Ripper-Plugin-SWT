@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
-import edu.umd.cs.guitar.event.SWTActionEDT;
+import edu.umd.cs.guitar.event.SWTAction;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
@@ -268,8 +268,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	
 	@Override
 	public void expandGUI(GComponent component) {
-		GEvent action = new SWTActionEDT();
-		action.perform(component, null);
+		new SWTAction().perform(component);
 		
 		// no need to wait for action, perform blocks until complete
 	}
