@@ -37,7 +37,7 @@ import org.kohsuke.args4j.Option;
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
-public class GRipperConfiguration {
+public class GRipperConfiguration { // TODO put all this in SWTRipperConfiguration and delete this class
 
     @Option(name = "-d", usage = "delay time after each GUI expanding action ", aliases = "--delay")
     Integer DELAY=500;

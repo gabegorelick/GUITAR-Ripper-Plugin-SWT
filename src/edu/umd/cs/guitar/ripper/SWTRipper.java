@@ -103,11 +103,7 @@ public class SWTRipper {
 	 * 
 	 * @throws CmdLineException
 	 */
-	public void execute() throws CmdLineException {
-		if (config.help) {
-			throw new CmdLineException("");
-		}
-		
+	public void execute() {		
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY,
 				config.getLogFile());
 		

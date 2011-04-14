@@ -1,7 +1,5 @@
 package edu.umd.cs.guitar.ripper;
 
-import org.kohsuke.args4j.CmdLineException;
-
 import edu.umd.cs.guitar.model.SWTApplicationStartException;
 
 /**
@@ -22,11 +20,7 @@ public class SWTRipperRunner {
 		this.ripperThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					ripper.execute();
-				} catch (CmdLineException e) {
-					e.printStackTrace();
-				}
+				ripper.execute();
 			}
 		});
 
@@ -39,7 +33,7 @@ public class SWTRipperRunner {
 	 * called on the main thread so that the application under test is started
 	 * on the main thread. The ripper is executed on its own thread.
 	 */
-	public void start() {
+	public void start() { // TODO change method name to rip
 		// ripper shouldn't be preempted by GUI once it's started
 		ripperThread.setPriority(Thread.MAX_PRIORITY);
 		

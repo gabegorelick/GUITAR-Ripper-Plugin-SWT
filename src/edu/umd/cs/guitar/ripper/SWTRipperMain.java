@@ -33,34 +33,41 @@ import org.kohsuke.args4j.CmdLineParser;
 
 
 /**
- * Main Entry class for SWTRipperMain
+ * This class provides the <code>main</code> method of SWTRipper. 
  * 
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
 public class SWTRipperMain {
 
-    /**
-     * @param args
-     */
+	/**
+	 * The main entry point into SWTRipper. Used by scripts to run the ripper.
+	 * Can also be invoked manually on the command line by users, but this is
+	 * not recommended as then the user would have to manage SWTGuitar's
+	 * classpath.
+	 * 
+	 * @param args
+	 *            command line arguments
+	 */
     public static void main(String[] args) {
         SWTRipperConfiguration configuration = new SWTRipperConfiguration();
         CmdLineParser parser = new CmdLineParser(configuration);
         
         try {
             parser.parseArgument(args);
-                        
+            if (configuration.help) {
+            	parser.printUsage(System.err);
+            	return;
+            }
+               
             SWTRipper swtRipper = new SWTRipper(configuration, Thread.currentThread());
             SWTRipperRunner runner = new SWTRipperRunner(swtRipper);
             runner.start();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println();
-            System.err.println("Usage: java [JVM options] "
-                    + SWTRipperMain.class.getName() + " [Ripper options] \n");
-            System.err.println("where [Ripper options] include:");
-            System.err.println();
             parser.printUsage(System.err);
         }
     }
+    
 }
