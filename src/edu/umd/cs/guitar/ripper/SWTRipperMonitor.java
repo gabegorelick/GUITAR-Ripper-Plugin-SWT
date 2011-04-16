@@ -213,7 +213,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			}
 		});
 		GUITARLog.log.info("Display disposed");
-//		SWTGlobals.rootSeen = false;
 	}
 
 	@Override

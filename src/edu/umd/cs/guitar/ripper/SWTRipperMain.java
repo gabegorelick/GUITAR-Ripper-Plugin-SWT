@@ -55,7 +55,7 @@ public class SWTRipperMain {
         
         try {
             parser.parseArgument(args);
-            if (configuration.help) {
+            if (configuration.getHelp()) {
             	parser.printUsage(System.err);
             	return;
             }

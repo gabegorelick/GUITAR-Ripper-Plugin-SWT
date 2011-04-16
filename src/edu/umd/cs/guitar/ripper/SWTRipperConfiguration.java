@@ -29,7 +29,6 @@
 package edu.umd.cs.guitar.ripper;
 
 import org.kohsuke.args4j.Option;
-import edu.umd.cs.guitar.util.Util;
 
 /**
  * Class contains the runtime configurations of SWT GUITAR Ripper
@@ -37,20 +36,16 @@ import edu.umd.cs.guitar.util.Util;
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
-public class SWTRipperConfiguration extends GRipperConfiguration {
+public class SWTRipperConfiguration extends SWTGuitarConfiguration {
 
-    // GUITAR runtime parameters
-    @Option(name = "-g", usage = "destination GUI file path", aliases = "--gui-file")
-    private String guiFile = "GUITAR-Default.GUI";
-
-    @Option(name = "-l", usage = "log file name ", aliases = "--log-file")
-    private String logFile = Util.getTimeStamp() + ".log";
-
-    @Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
-    private String logWidgetFile = "log_widget.xml";
-
-    @Option(name = "-i", usage = "initial waiting time for the application to get stablized before being ripped", aliases = "--initial-wait")
-    private int initialWaitingTime = 500;
+	@Option(name = "-g", usage = "destination GUI file path", aliases = "--gui-file")
+	private String guiFile = "GUITAR-Default.GUI";
+	
+	@Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
+	private String logWidgetFile = "log_widget.xml";
+	
+	@Option(name = "-ce", usage = "Customized event list (usually aut-specific events)", aliases = "--event-list")
+	private String customizedEventList = null;
 
     // @Option(name = "-iw", usage =
     // "file  containing a list of windows should be ignored during ripping ",
@@ -61,25 +56,8 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
     // "file  containing a list of components should be ignored during ripping ",
     // aliases = "--ignore-component-file")
     // static public String IGNORE_COMPONENT_FILE;
-
-    // Application Under Test
-    @Option(name = "-c", usage = "<REQUIRED> main class name for the Application Under Test ", aliases = "--main-class", required = true)
-    private String mainClass = null;
-
-    @Option(name = "-a", usage = "arguments for the Application Under Test, separated by a colon (:) ", aliases = "--arguments")
-    private String argumentList;
-
-    @Option(name = "-u", usage = "URLs for the Application Under Test, separated by a colon (:) ", aliases = "--urls")
-    private String urlList;
-
-    @Option(name = "-cf", usage = "Configure file for the ripper defining terminal, ignored components and ignored windows", aliases = "--configure-file")
-    private String configFile = //"resources" + File.separator + "config"
-           // + File.separator + 
-            "configuration.xml";
     
-    @Option(name = "-ce", usage = "Customized event list (usually aut-specific events)", aliases = "--event-list")
-    private String customizedEventList = null;
-
+	
 	public void setGuiFile(String guiFile) {
 		this.guiFile = guiFile;
 	}
@@ -87,15 +65,7 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
 	public String getGuiFile() {
 		return guiFile;
 	}
-
-	public void setLogFile(String logFile) {
-		this.logFile = logFile;
-	}
-
-	public String getLogFile() {
-		return logFile;
-	}
-
+	
 	public void setLogWidgetFile(String logWidgetFile) {
 		this.logWidgetFile = logWidgetFile;
 	}
@@ -103,48 +73,7 @@ public class SWTRipperConfiguration extends GRipperConfiguration {
 	public String getLogWidgetFile() {
 		return logWidgetFile;
 	}
-
-	public void setInitialWaitingTime(int initialWaitingTime) {
-		this.initialWaitingTime = initialWaitingTime;
-	}
-
-	public int getInitialWaitingTime() {
-		return initialWaitingTime;
-	}
-
-	public void setMainClass(String mainClass) {
-		this.mainClass = mainClass;
-	}
-
-	public String getMainClass() {
-		return mainClass;
-	}
-
-	public void setArgumentList(String argumentList) {
-		this.argumentList = argumentList;
-	}
-
-	public String getArgumentList() {
-		return argumentList;
-	}
-
-	// TODO use Args4j option handlers to make this array of URLs instead
-	public void setUrlList(String urlList) {
-		this.urlList = urlList;
-	}
-
-	public String getUrlList() {
-		return urlList;
-	}
-
-	public void setConfigFile(String configFile) {
-		this.configFile = configFile;
-	}
-
-	public String getConfigFile() {
-		return configFile;
-	}
-
+	
 	public void setCustomizedEventList(String customizedEventList) {
 		this.customizedEventList = customizedEventList;
 	}
