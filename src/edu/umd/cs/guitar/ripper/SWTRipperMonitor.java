@@ -9,8 +9,6 @@
  */
 package edu.umd.cs.guitar.ripper;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,34 +52,17 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 * 
 	 */
 	private volatile LinkedList<Shell> tempOpenedWinStack = new LinkedList<Shell>();
-
+	// TODO I don't think these have to be volatile
 	private volatile LinkedList<Shell> tempClosedWinStack = new LinkedList<Shell>();
 
-	/**
-	 * Construct a new <code>SWTRipperMonitor</code>. This constructor is
-	 * equivalent to
-	 * <code>SWTRipperMonitor(configuration, Thread.getCurrentThread())</code>.
-	 * Consequently, this constructor must be called on the same thread that the
-	 * application under test is running on (usually the <code>main</code>
-	 * thread).
-	 * 
-	 * @param configuration
-	 *            ripper configuration
-	 */
-	public SWTRipperMonitor(SWTRipperConfiguration configuration) {
-		this(configuration, Thread.currentThread());
-	}
-	
 	/**
 	 * Constructor
 	 * 
 	 * @param configuration
 	 *            ripper configuration
-	 * @param appThread
-	 *            thread the SWT GUI is running on (almost always the
-	 *            <code>main</code> thread)
+	 * @param app
 	 */
-	public SWTRipperMonitor(SWTRipperConfiguration configuration, Thread appThread) {
+	public SWTRipperMonitor(SWTRipperConfiguration configuration, SWTApplication app) {
 		super();
 		
 		if (configuration == null) {
@@ -89,25 +70,9 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		}
 		
 		this.configuration = configuration;
+		this.application = app;
 		
-		// don't store application.getDisplay because it's still null at this point
-				
-		String[] URLs;
-		if (configuration.getUrlList() != null) {
-			URLs = configuration.getUrlList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		} else {
-			URLs = new String[0];
-		}
-		
-		try {
-			application = new SWTApplication(configuration.getMainClass(), appThread);
-			application.setArgsToApp(parseArgumentList());
-			for (String s : URLs) {
-				application.addURL(new URL(s));
-			}			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} 
+		// don't store application.getDisplay because it's still null at this point 
 	}
 
 	@Override
@@ -143,6 +108,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		}
 
 		try {
+			// TODO this doesn't seem to do anything
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
 			GUITARLog.log.error(e);
@@ -189,21 +155,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		application.connect();
 	}
 	
-	/**
-	 * Convert <code>String</code> of
-	 * {@link GUITARConstants.CMD_ARGUMENT_SEPERATOR}-separated arguments from
-	 * {@link SWTRipperConfiguration} into an array of <code>Strings</code>.
-	 * 
-	 * @return array of arguments to be passed to the SWT application
-	 */
-	private String[] parseArgumentList() {
-		if (configuration.getArgumentList() != null) {
-			return configuration.getArgumentList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		} else {
-			return new String[0];
-		}
-	}
-
 	@Override
 	public void cleanUp() {
 		application.getDisplay().syncExec(new Runnable() {

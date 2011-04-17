@@ -30,6 +30,7 @@ package edu.umd.cs.guitar.ripper;
 
 import edu.umd.cs.guitar.model.GIDGenerator;
 import edu.umd.cs.guitar.model.IO;
+import edu.umd.cs.guitar.model.SWTApplication;
 import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
 import edu.umd.cs.guitar.model.data.ComponentListType;
 import edu.umd.cs.guitar.model.data.GUIStructure;
@@ -94,7 +95,8 @@ public class SWTRipper extends SWTGuitarExecutor {
 			this.config = config;
 		}
 		
-		monitor = new SWTRipperMonitor(config, guiThread);
+		SWTApplication app = new SWTApplication(this.config.getMainClass(), guiThread);
+		monitor = new SWTRipperMonitor(this.config, app);
 		ripper = initRipper();
 	}
 	

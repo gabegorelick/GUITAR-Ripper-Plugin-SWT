@@ -1,6 +1,8 @@
 package edu.umd.cs.guitar.ripper;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,11 +86,35 @@ public abstract class SWTGuitarExecutor {
 		}
 		
 		this.config = config;
-		this.application = new SWTApplication(config.getMainClass(), guiThread);
-		
+		this.application = initSWTApplication(config, guiThread);
 		this.xmlConfig = loadXmlConfig();
 		
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
+	}
+	
+	private SWTApplication initSWTApplication(SWTGuitarConfiguration config, Thread guiThread) {
+		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
+		
+		// add arguments
+		if (config.getArgumentList() != null) {
+			String[] args = config.getArgumentList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+			app.setArgsToApp(args);
+		}
+		
+		// add URLs
+		try {
+			if (config.getUrlList() != null) {
+				String[] urls = config.getUrlList().split(
+						GUITARConstants.CMD_ARGUMENT_SEPARATOR);
+				for (String s : urls) {
+					app.addURL(new URL(s));
+				}
+			}
+		} catch (MalformedURLException e) {
+			GUITARLog.log.error(e);
+		}
+		
+		return app;
 	}
 	
 	private Configuration loadXmlConfig() {
