@@ -29,18 +29,20 @@ import edu.umd.cs.guitar.model.swtwidgets.SWTWidget;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
+ * Monitor for {@link SWTRipper} to handle SWT specific features. Adapted from
+ * <code>JFCRipperMonitor</code>.
  * 
- * Monitor for the ripper to handle SWT specific features
- * 
- * @see GRipperMonitor
- * 
+ * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
 public class SWTRipperMonitor extends GRipperMonitor {
 
-	private SWTApplication application;
-	private SWTRipperConfiguration configuration;
+	private final SWTApplication application;
+	private final SWTRipperConfiguration configuration;
+	
+	// monitor to delegate actions shared with replayer to
+	private final SWTMonitor monitor;
 
 	private List<String> sRootWindows = new ArrayList<String>();
 
@@ -58,19 +60,20 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	/**
 	 * Constructor
 	 * 
-	 * @param configuration
+	 * @param config
 	 *            ripper configuration
 	 * @param app
 	 */
-	public SWTRipperMonitor(SWTRipperConfiguration configuration, SWTApplication app) {
+	public SWTRipperMonitor(SWTRipperConfiguration config, SWTApplication app) {
 		super();
 		
-		if (configuration == null) {
-			configuration = new SWTRipperConfiguration();
+		if (config == null) {
+			config = new SWTRipperConfiguration();
 		}
 		
-		this.configuration = configuration;
+		this.configuration = config;
 		this.application = app;
+		this.monitor = new SWTMonitor(configuration, app);
 		
 		// don't store application.getDisplay because it's still null at this point 
 	}
@@ -119,23 +122,15 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	@Override
 	public void setUp() {
 
-		// Registering default supported events
-
+		monitor.registerEvents();
+		
 		EventManager em = EventManager.getInstance();
 
-		for (Class<? extends GEvent> event : SWTConstants.DEFAULT_SUPPORTED_EVENTS) {
-			em.registerEvent(event);
-		}
-
-		// Registering customized supported event
-//		Class<? extends GEvent> gCustomizedEvents;
-
-		String[] sCustomizedEventList;
-		if (configuration.getCustomizedEventList() != null)
+		String[] sCustomizedEventList = new String[0];
+		if (configuration.getCustomizedEventList() != null) {
 			sCustomizedEventList = configuration.getCustomizedEventList()
 					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		else
-			sCustomizedEventList = new String[0];
+		}
 
 		for (String sEvent : sCustomizedEventList) {
 			try {
@@ -145,7 +140,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			} catch (ClassNotFoundException e) {
 				GUITARLog.log.error(e);
 			}
-
 		}
 
 		// Set up parameters
@@ -157,13 +151,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	
 	@Override
 	public void cleanUp() {
-		application.getDisplay().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				application.getDisplay().dispose();
-			}
-		});
-		GUITARLog.log.info("Display disposed");
+		monitor.cleanUp();
 	}
 
 	@Override
