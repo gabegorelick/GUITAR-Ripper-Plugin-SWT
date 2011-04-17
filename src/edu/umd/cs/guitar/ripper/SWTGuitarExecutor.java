@@ -95,6 +95,9 @@ public abstract class SWTGuitarExecutor {
 	private SWTApplication initSWTApplication(SWTGuitarConfiguration config, Thread guiThread) {
 		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
 		
+		app.setTimeout(config.getGuiStartTimeout());		
+		app.setInitialWait(config.getInitialWaitTime());
+		
 		// add arguments
 		if (config.getArgumentList() != null) {
 			String[] args = config.getArgumentList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);

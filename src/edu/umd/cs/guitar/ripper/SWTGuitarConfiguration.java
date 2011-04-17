@@ -2,6 +2,7 @@ package edu.umd.cs.guitar.ripper;
 
 import org.kohsuke.args4j.Option;
 
+import edu.umd.cs.guitar.model.SWTApplication;
 import edu.umd.cs.guitar.util.Util;
 
 /**
@@ -21,8 +22,11 @@ public abstract class SWTGuitarConfiguration {
 	@Option(name = "-l", usage = "log file name ", aliases = "--log-file")
 	private String logFile = Util.getTimeStamp() + ".log";
 
-	@Option(name = "-i", usage = "initial waiting time for the application to get stablized before being ripped", aliases = "--initial-wait")
-	private int initialWaitTime = 500;
+	@Option(name = "-i", usage = "initial waiting time for the GUI to get stablized (in milliseconds)", aliases = "--initial-wait")
+	private int initialWaitTime = 0;
+
+	@Option(name = "-at", usage = "maximum time to wait for the GUI to start (in milliseconds)", aliases = "--gui-start-timeout")
+	private int guiStartTimeout = SWTApplication.DEFAULT_TIMEOUT;
 
 	// Application Under Test parameters
 
@@ -55,6 +59,14 @@ public abstract class SWTGuitarConfiguration {
 
 	public String getLogFile() {
 		return logFile;
+	}
+	
+	public void setGuiStartTimeout(int guiStartTimeout) {
+		this.guiStartTimeout = guiStartTimeout;
+	}
+	
+	public int getGuiStartTimeout() {
+		return guiStartTimeout;
 	}
 
 	public void setInitialWaitTime(int initialWaitTime) {
