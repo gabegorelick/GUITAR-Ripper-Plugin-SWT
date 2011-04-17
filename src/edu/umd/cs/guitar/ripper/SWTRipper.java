@@ -28,31 +28,13 @@
  */
 package edu.umd.cs.guitar.ripper;
 
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-
-import org.kohsuke.args4j.CmdLineException;
-
 import edu.umd.cs.guitar.model.GIDGenerator;
-import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
-import edu.umd.cs.guitar.model.SWTConstants;
 import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
-import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.ComponentListType;
-import edu.umd.cs.guitar.model.data.ComponentType;
-import edu.umd.cs.guitar.model.data.Configuration;
-import edu.umd.cs.guitar.model.data.FullComponentType;
 import edu.umd.cs.guitar.model.data.GUIStructure;
 import edu.umd.cs.guitar.model.data.LogWidget;
 import edu.umd.cs.guitar.model.data.ObjectFactory;
-import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
-import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
-import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -61,10 +43,11 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
-public class SWTRipper {
+public class SWTRipper extends SWTGuitarExecutor {
 
 	private final SWTRipperConfiguration config;
 	private final SWTRipperMonitor monitor;
+	private final Ripper ripper;
 
 	/**
 	 * Constructs a new <code>SWTRipper</code>. This constructor is equivalent 
@@ -85,158 +68,68 @@ public class SWTRipper {
 	 * always the main thread and actually must be the main thread on Cocoa.
 	 * 
 	 * @param config
-	 * @param appThread thread the application under test runs on
+	 * @param guiThread thread the GUI runs on
 	 */
-	public SWTRipper(SWTRipperConfiguration config, Thread appThread) {
-		super();
+	public SWTRipper(SWTRipperConfiguration config, Thread guiThread) {
+		super(config, guiThread);
 		
 		if (config == null) {
-			config = new SWTRipperConfiguration();
+			this.config = new SWTRipperConfiguration();
+		} else {
+			this.config = config;
 		}
 		
-		this.config = config;
-		monitor = new SWTRipperMonitor(config, appThread);
+		monitor = new SWTRipperMonitor(config, guiThread);
+		ripper = initRipper();
+	}
+	
+	// initialize the ripper
+	private Ripper initRipper() {
+		Ripper ripper = new Ripper(GUITARLog.log);
+		
+		GRipperMonitor gMonitor = getMonitor();		
+		ripper.setMonitor(gMonitor);
+		
+		GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
+		ripper.setIDGenerator(idGenerator);
+		
+		return ripper;
 	}
 	
 	/**
 	 * Execute the SWT ripper.
-	 * 
-	 * @throws CmdLineException
 	 */
-	public void execute() {		
-		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY,
-				config.getLogFile());
-		
-		long nStartTime = System.currentTimeMillis();
-		Ripper ripper = new Ripper(GUITARLog.log);
-
-		// -------------------------
-		// Setup configuration
-		// -------------------------
-
+	protected void onExecute() {
 		try {
-			setupEnv(ripper);
-			ripper.execute();
-			
-			GUIStructure dGUIStructure = ripper.getResult();
-			IO.writeObjToFile(dGUIStructure, config.getGuiFile());
-
-			GUITARLog.log.info("-----------------------------");
-			GUITARLog.log.info("OUTPUT SUMARY: ");
-			GUITARLog.log.info("Number of Windows: "
-					+ dGUIStructure.getGUI().size());
-			GUITARLog.log.info("GUI file:" + config.getGuiFile());
-			GUITARLog.log.info("Open Component file:"
-					+ config.getLogWidgetFile());
-			ComponentListType lOpenWins = ripper.getlOpenWindowComps();
-			ComponentListType lCloseWins = ripper.getlCloseWindowComp();
-			ObjectFactory factory = new ObjectFactory();
-
-			LogWidget logWidget = factory.createLogWidget();
-			logWidget.setOpenWindow(lOpenWins);
-			logWidget.setCloseWindow(lCloseWins);
-
-			IO.writeObjToFile(logWidget, config.getLogWidgetFile());
-
-			// ------------------
-			// Elapsed time:
-			long nEndTime = System.currentTimeMillis();
-			long nDuration = nEndTime - nStartTime;
-			DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
-			df.setTimeZone(TimeZone.getTimeZone("GMT"));
-			GUITARLog.log.info("Ripping Elapsed: " + df.format(nDuration));
-			GUITARLog.log.info("Log file: " + config.getLogFile());
+			ripper.execute();			
 		} catch (Exception e) {
 			GUITARLog.log.error("SWTRipper: ", e);
 		}
 	}
-
 	
-	private void setupEnv(Ripper ripper) {
-		// --------------------------
-		// Terminal list
+	protected void onAfterExecute() {
+		GUIStructure dGUIStructure = ripper.getResult();
+		IO.writeObjToFile(dGUIStructure, config.getGuiFile());
 
-		// Try to find absolute path first then relative path
+		GUITARLog.log.info("-----------------------------");
+		GUITARLog.log.info("OUTPUT SUMARY: ");
+		GUITARLog.log.info("Number of Windows: "
+				+ dGUIStructure.getGUI().size());
+		GUITARLog.log.info("GUI file:" + config.getGuiFile());
+		GUITARLog.log.info("Open Component file:"
+				+ config.getLogWidgetFile());
+		ComponentListType lOpenWins = ripper.getlOpenWindowComps();
+		ComponentListType lCloseWins = ripper.getlCloseWindowComp();
+		ObjectFactory factory = new ObjectFactory();
 
-		Configuration conf = null;
+		LogWidget logWidget = factory.createLogWidget();
+		logWidget.setOpenWindow(lOpenWins);
+		logWidget.setCloseWindow(lCloseWins);
 
-		try {
-			conf = (Configuration) IO.readObjFromFile(
-					config.getConfigFile(), Configuration.class);
+		IO.writeObjToFile(logWidget, config.getLogWidgetFile());
 
-			if (conf == null) {
-				InputStream in = getClass()
-						.getClassLoader()
-						.getResourceAsStream(config.getConfigFile());
-				conf = (Configuration) IO.readObjFromFile(in,
-						Configuration.class);
-			}
-
-		} catch (Exception e) {
-			GUITARLog.log.info("No configuration file. Using an empty one...");
-		}
-
-		if (conf == null) {
-			DefaultFactory df = new DefaultFactory();
-			conf = df.createDefaultConfiguration();
-		}
-
-		List<FullComponentType> cTerminalList = conf.getTerminalComponents()
-				.getFullComponent();
-
-		for (FullComponentType cTermWidget : cTerminalList) {
-			ComponentType component = cTermWidget.getComponent();
-			AttributesType attributes = component.getAttributes();
-			if (attributes != null)
-				SWTConstants.sTerminalWidgetSignature
-						.add(new AttributesTypeWrapper(component
-								.getAttributes()));
-		}
-
-		GRipperMonitor gMonitor = getMonitor();
-
-		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
-		// List<String> ignoredWindow = new ArrayList<String>();
-
-		ComponentListType ignoredAll = conf.getIgnoredComponents();
-
-		if (ignoredAll != null) {
-			for (FullComponentType fullComp : ignoredAll.getFullComponent()) {
-				ComponentType comp = fullComp.getComponent();
-
-				// TODO: Shortcut here
-				if (comp == null) {
-					ComponentType win = fullComp.getWindow();
-					ComponentTypeWrapper winAdapter = new ComponentTypeWrapper(
-							win);
-					String sWindowTitle = winAdapter
-							.getFirstValueByName(GUITARConstants.TITLE_TAG_NAME);
-					if (sWindowTitle != null) {
-						SWTConstants.sIgnoredWins.add(sWindowTitle);
-					}
-
-				} else {
-					lIgnoredComps.add(fullComp);
-				}
-			}
-		}
-
-		// --------------------------
-		// Add ripper.addComponentFilter() calls to ignore components here
-
-		// Set up Monitor
-		ripper.setMonitor(gMonitor);
-		
-		// Set up HashcodeGenerator
-		
-//		GHashcodeGenerator jHashcodeGenerator = JFCDefaultHashcodeGenerator.getInstance();
-//		ripper.setHashcodeGenerator(jHashcodeGenerator);
-
-		
-		// Set up IDGenerator
-		
-		GIDGenerator jIDGenerator = SWTDefaultIDGenerator.getInstance();
-		ripper.setIDGenerator(jIDGenerator);
+		// print time elapsed
+		super.onAfterExecute();
 	}
 	
 	public SWTRipperMonitor getMonitor() {
