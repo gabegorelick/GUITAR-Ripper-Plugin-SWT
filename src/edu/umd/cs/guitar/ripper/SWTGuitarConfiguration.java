@@ -4,7 +4,14 @@ import org.kohsuke.args4j.Option;
 
 import edu.umd.cs.guitar.util.Util;
 
-public class SWTGuitarConfiguration {
+/**
+ * Superclass of all SWT GUITAR configuration objects. This class collects
+ * configuration options common to SWTRipper and SWTReplayer.
+ * 
+ * @author Gabe Gorelick
+ * 
+ */
+public abstract class SWTGuitarConfiguration {
 
 	@Option(name = "-?", usage = "print this help message", aliases = "--help")
 	private boolean help;
