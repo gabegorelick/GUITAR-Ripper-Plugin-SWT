@@ -38,10 +38,12 @@ import edu.umd.cs.guitar.model.data.ObjectFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Executing class for SWTRipper
+ * Adapts a {@link Ripper} for use with SWT GUIs.
  * 
+ * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
+ * 
  */
 public class SWTRipper extends SWTGuitarExecutor {
 
@@ -50,25 +52,38 @@ public class SWTRipper extends SWTGuitarExecutor {
 	private final Ripper ripper;
 
 	/**
-	 * Constructs a new <code>SWTRipper</code>. This constructor is equivalent 
-	 * to <code>SWTRipper(config, Thread.currentThread())</code>. Consequently,
-	 * this constructor must be called on the same thread that the application
-	 * under test is running on (usually the <code>main</code> thread). 
+	 * Constructs a new <code>SWTRipper</code>. This constructor is equivalent
+	 * to
+	 * 
+	 * <pre>
+	 * SWTRipper(config, Thread.currentThread())
+	 * </pre>
+	 * 
+	 * Consequently, this constructor must be called on the same thread that the
+	 * application under test is running on (usually the <code>main</code>
+	 * thread).
 	 * 
 	 * @param config
-	 * @param appThread thread the application under test runs on
+	 *            configuration
+	 * 
+	 * @see SWTApplicationRunner
 	 */
 	public SWTRipper(SWTRipperConfiguration config) {
 		this(config, Thread.currentThread());
 	}
-	
+
 	/**
 	 * Constructs a new <code>SWTRipper</code>. The thread passed in is the
-	 * thread on which the SWT application under test runs. This is almost 
-	 * always the main thread and actually must be the main thread on Cocoa.
+	 * thread on which the SWT application under test runs. This is almost
+	 * always the <code>main</code> thread (and actually must be the
+	 * <code>main</code> thread on Cocoa).
 	 * 
 	 * @param config
-	 * @param guiThread thread the GUI runs on
+	 *            configuration
+	 * @param guiThread
+	 *            thread the GUI runs on
+	 * 
+	 * @see SWTApplicationRunner
 	 */
 	public SWTRipper(SWTRipperConfiguration config, Thread guiThread) {
 		super(config, guiThread);
@@ -97,8 +112,11 @@ public class SWTRipper extends SWTGuitarExecutor {
 	}
 	
 	/**
-	 * Execute the SWT ripper.
+	 * Execute the ripper.
+	 * 
+	 * @see Ripper#execute()
 	 */
+	@Override
 	protected void onExecute() {
 		try {
 			ripper.execute();			
@@ -107,6 +125,10 @@ public class SWTRipper extends SWTGuitarExecutor {
 		}
 	}
 	
+	/**
+	 * Log the results of ripping.
+	 */
+	@Override
 	protected void onAfterExecute() {
 		GUIStructure dGUIStructure = ripper.getResult();
 		IO.writeObjToFile(dGUIStructure, config.getGuiFile());

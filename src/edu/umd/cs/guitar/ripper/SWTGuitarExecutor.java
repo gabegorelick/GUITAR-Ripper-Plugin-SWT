@@ -21,6 +21,20 @@ import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
 import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 
+/**
+ * <p>
+ * This is the parent class of <code>SWTRipper</code> and
+ * <code>SWTReplayer</code>. Responsible for abstracting away the differences
+ * between the two and implementing common functionality.
+ * </p>
+ * <p>
+ * Subclasses are responsible for implementing the {@link #onExecute()} method,
+ * which does most of the work of running the ripper or replayer.
+ * </p>
+ * 
+ * @author Gabe Gorelick
+ * 
+ */
 public abstract class SWTGuitarExecutor {
 
 	private final SWTGuitarConfiguration config;
@@ -29,11 +43,41 @@ public abstract class SWTGuitarExecutor {
 	private final Configuration xmlConfig; 
 	
 	private long startTime;
-	
+
+	/**
+	 * Constructs a new <code>SWTGuitarExecutor</code>. This constructor is
+	 * equivalent to
+	 * 
+	 * <pre>
+	 * SWTGuitarExecutor(config, Thread.currentThread())
+	 * </pre>
+	 * 
+	 * Consequently, this constructor must be called on the same thread that the
+	 * application under test is running on (usually the <code>main</code>
+	 * thread).
+	 * 
+	 * @param config
+	 *            configuration
+	 * 
+	 * @see SWTApplicationRunner
+	 */
 	protected SWTGuitarExecutor(SWTGuitarConfiguration config) {
 		this(config, Thread.currentThread());
 	}
-	
+
+	/**
+	 * Constructs a new <code>SWTGuitarExecutor</code>. The thread passed in is
+	 * the thread on which the SWT application under test runs. This is almost
+	 * always the <code>main</code> thread (and actually must be the
+	 * <code>main</code> thread on Cocoa).
+	 * 
+	 * @param config
+	 *            configuration
+	 * @param guiThread
+	 *            thread the GUI runs on
+	 * 
+	 * @see SWTApplicationRunner
+	 */
 	protected SWTGuitarExecutor(SWTGuitarConfiguration config, Thread guiThread) {
 		if (config == null) {
 			config = new SWTRipperConfiguration();
