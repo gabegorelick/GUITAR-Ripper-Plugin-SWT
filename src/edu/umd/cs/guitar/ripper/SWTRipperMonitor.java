@@ -16,14 +16,11 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-import edu.umd.cs.guitar.event.EventManager;
-import edu.umd.cs.guitar.event.GEvent;
-import edu.umd.cs.guitar.event.SWTAction;
+import edu.umd.cs.guitar.event.SWTDefaultAction;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
 import edu.umd.cs.guitar.model.SWTApplication;
-import edu.umd.cs.guitar.model.SWTConstants;
 import edu.umd.cs.guitar.model.SWTWindow;
 import edu.umd.cs.guitar.model.swtwidgets.SWTWidget;
 import edu.umd.cs.guitar.util.GUITARLog;
@@ -121,30 +118,6 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void setUp() {
-
-		monitor.registerEvents();
-		
-		EventManager em = EventManager.getInstance();
-
-		String[] sCustomizedEventList = new String[0];
-		if (configuration.getCustomizedEventList() != null) {
-			sCustomizedEventList = configuration.getCustomizedEventList()
-					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		}
-
-		for (String sEvent : sCustomizedEventList) {
-			try {
-				@SuppressWarnings("unchecked")
-				Class<? extends GEvent> cEvent = (Class<? extends GEvent>) Class.forName(sEvent);
-				em.registerEvent(cEvent);
-			} catch (ClassNotFoundException e) {
-				GUITARLog.log.error(e);
-			}
-		}
-
-		// Set up parameters
-		sIgnoreWindowList = SWTConstants.sIgnoredWins;
-
 		// sleep until application is ready
 		application.connect();
 	}
@@ -206,7 +179,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	
 	@Override
 	public void expandGUI(GComponent component) {
-		new SWTAction().perform(component);
+		new SWTDefaultAction().perform(component);
 		
 		// no need to wait for action, perform blocks until complete
 	}
