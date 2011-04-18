@@ -44,9 +44,6 @@ public class SWTRipperConfiguration extends SWTGuitarConfiguration {
 	@Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
 	private String logWidgetFile = "log_widget.xml";
 	
-	@Option(name = "-ce", usage = "Customized event list (usually aut-specific events)", aliases = "--event-list")
-	private String customizedEventList = null;
-
     // @Option(name = "-iw", usage =
     // "file  containing a list of windows should be ignored during ripping ",
     // aliases = "--ignore-window-file")
@@ -74,12 +71,4 @@ public class SWTRipperConfiguration extends SWTGuitarConfiguration {
 		return logWidgetFile;
 	}
 	
-	public void setCustomizedEventList(String customizedEventList) {
-		this.customizedEventList = customizedEventList;
-	}
-
-	public String getCustomizedEventList() {
-		return customizedEventList;
-	}
-
 }
