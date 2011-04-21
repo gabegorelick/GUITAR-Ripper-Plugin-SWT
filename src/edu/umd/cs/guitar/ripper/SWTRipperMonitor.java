@@ -12,6 +12,7 @@ package edu.umd.cs.guitar.ripper;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
@@ -82,20 +83,21 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		application.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				if (application.getDisplay().isDisposed()) {
-					throw new AssertionError("display is disposed");
-				}
-				
-				for (Shell shell : application.getDisplay().getShells()) {
-					if (!isValidRootWindow(shell)) {
-						continue;
+				synchronized (retWindowList) {
+					if (application.getDisplay().isDisposed()) {
+						throw new AssertionError("display is disposed");
 					}
+					for (Shell shell : application.getDisplay().getShells()) {
+						if (!isValidRootWindow(shell)) {
+							continue;
+						}
 
-					if (sRootWindows.size() == 0
-							|| (sRootWindows.contains(shell.getText()))) {
-						
-						GWindow gWindow = new SWTWindow(shell);
-						retWindowList.add(gWindow);
+						if (sRootWindows.size() == 0
+								|| (sRootWindows.contains(shell.getText()))) {
+
+							GWindow gWindow = new SWTWindow(shell);
+							retWindowList.add(gWindow);
+						}
 					}
 				}
 			}
@@ -192,16 +194,16 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 * @return true if worth ripping, false otherwise
 	 */
 	private boolean isValidRootWindow(final Shell window) {
-		final boolean[] visible = new boolean[1];
+		final AtomicBoolean visible = new AtomicBoolean();
 		
 		window.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				visible[0] = window.isVisible();
+				visible.set(window.isVisible());
 			}
 		});
 		
-		return visible[0];
+		return visible.get();
 	}
 
 	/**
@@ -211,16 +213,16 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 * @return true/false
 	 */
 	private boolean isClickable(final Widget widget) {
-		final boolean[] disposed = new boolean[1];
+		final AtomicBoolean disposed = new AtomicBoolean();
 		
 		widget.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				disposed[0] = widget.isDisposed();
+				disposed.set(widget.isDisposed());
 			}
 		});
 		
-		return !disposed[0];
+		return !disposed.get();
 	}
 
 	@Override
