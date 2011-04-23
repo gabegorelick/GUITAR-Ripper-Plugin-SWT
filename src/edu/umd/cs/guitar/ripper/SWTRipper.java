@@ -101,9 +101,8 @@ public class SWTRipper extends SWTGuitarExecutor {
 	// initialize the ripper
 	private Ripper initRipper() {
 		Ripper ripper = new Ripper(GUITARLog.log);
-		
-		GRipperMonitor gMonitor = getMonitor();		
-		ripper.setMonitor(gMonitor);
+				
+		ripper.setMonitor(monitor);
 		
 		GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
 		ripper.setIDGenerator(idGenerator);
@@ -153,7 +152,13 @@ public class SWTRipper extends SWTGuitarExecutor {
 		// print time elapsed
 		super.onAfterExecute();
 	}
-	
+
+	/**
+	 * Get the {@code SWTRipperMonitor} used by this {@code SWTRipper}.
+	 * 
+	 * @return the monitor used by this ripper
+	 */
+	@Override
 	public SWTRipperMonitor getMonitor() {
 		return monitor;
 	}

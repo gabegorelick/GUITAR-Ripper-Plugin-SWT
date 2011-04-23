@@ -30,8 +30,9 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * between the two and implementing common functionality.
  * </p>
  * <p>
- * Subclasses are responsible for implementing the {@link #onExecute()} method,
- * which does most of the work of running the ripper or replayer.
+ * Subclasses are responsible for implementing the {@link #onExecute()
+ * onExecute} method, which does most of the work of running the ripper or
+ * replayer.
  * </p>
  * 
  * @author Gabe Gorelick
@@ -92,6 +93,7 @@ public abstract class SWTGuitarExecutor {
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
 	}
 	
+	// initialize the SWTApplication
 	private SWTApplication initSWTApplication(SWTGuitarConfiguration config, Thread guiThread) {
 		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
 		
@@ -120,6 +122,7 @@ public abstract class SWTGuitarExecutor {
 		return app;
 	}
 	
+	// load the config file (the XML one that lists ignored components)
 	private Configuration loadXmlConfig() {
 		Configuration conf = null;
 
@@ -130,14 +133,18 @@ public abstract class SWTGuitarExecutor {
 			if (conf == null) {
 				InputStream in = getClass().getClassLoader()
 						.getResourceAsStream(config.getConfigFile());
-				conf = (Configuration) IO.readObjFromFile(in,
-						Configuration.class);
+				if (in != null) {
+					conf = (Configuration) IO.readObjFromFile(in,
+							Configuration.class);
+				}
 			}
 
 		} catch (Exception e) {
-			// this space left intentionally blank
+			GUITARLog.log.warn(e);
+			// if there's any problem loading the config, we use an empty one
 		}
 		
+		// failed to load config file
 		if (conf == null) {
 			GUITARLog.log.info("No configuration file. Using an empty one...");
 			DefaultFactory df = new DefaultFactory();
@@ -146,25 +153,55 @@ public abstract class SWTGuitarExecutor {
 		
 		return conf;
 	}
-	
-	protected SWTGuitarConfiguration getConfig() {
-		return config;
-	}
-	
+
+	/**
+	 * Return the monitor used by this {@code SWTGuitarExecutor}. As their is no
+	 * common superclass for all monitors, this method returns an {@code Object}
+	 * . Subclasses are encouraged to modify the signature of their
+	 * implementations of this method to return a more appropriate type, e.g.
+	 * {@code SWTRipperMonitor} or {@code SWTReplayerMonitor}.
+	 * 
+	 * @return the monitor used by this executor
+	 */
+	public abstract Object getMonitor();
+
+	/**
+	 * Get the {@code SWTApplication} used by this {@code SWTGuitarExecutor}.
+	 * 
+	 * @return the {@code SWTApplication} that models the GUI
+	 */
 	public SWTApplication getApplication() {
 		return application;
 	}
 	
+	/**
+	 * Get the time that the {@code SWTGuitarExecutor} starting executing. This
+	 * is set by {@link #beginTiming()}. Useful if subclasses want to log how
+	 * long execution took. 
+	 * 
+	 * @return start time in milliseconds
+	 * 
+	 * @see System#currentTimeMillis()
+	 */
 	protected long getStartTime() {
 		return startTime;
 	}
-	
+
+	/**
+	 * Get the {@code Configuration} used by this {@code SWTGuitarExecutor}. The
+	 * {@code Configuration} stores user-specified ignored and terminal
+	 * components.
+	 * 
+	 * @return the {@code Configuration} used by this {@code SWTGuitarExecutor}
+	 */
 	protected Configuration getXmlConfig() {
 		return xmlConfig;
 	}
 
 	/**
-	 * Called directly before the {@link #execute() execute} method.
+	 * Called directly before the {@link #execute() execute} method. Subclasses
+	 * are encouraged to call their parent's implementation of this method so
+	 * that it can perform necessary setup.
 	 */
 	protected void onBeforeExecute() {		
 		initTerminalComponents();
@@ -172,24 +209,46 @@ public abstract class SWTGuitarExecutor {
 		
 		beginTiming();
 	}
-	
-	public void execute() {
+
+	/**
+	 * Run this {@code SWTGuitarExecutor}. This method simply calls
+	 * {@link #onBeforeExecute()}, {@link #onExecute()}, and then
+	 * {@link #onAfterExecute()}.
+	 */
+	public final void execute() {
 		onBeforeExecute();
 		onExecute();
 		onAfterExecute();
 	}
-	
+
+	/**
+	 * Execute the {@code SWTGuitarExecutor}. Called after
+	 * {@link #onBeforeExecute()} and before {@link #onAfterExecute()}.
+	 * Subclasses should execute their respective tools in this method.
+	 */
 	protected abstract void onExecute();
 	
+	/**
+	 * Called after {@link #onExecute()} has completed. This implementation simply
+	 * ends timing the execution.
+	 * 
+	 * @see #getStartTime()
+	 */
 	protected void onAfterExecute() {
 		endTiming();
 	}
 	
-	protected void beginTiming() {
+	/**
+	 * Begin timing execution. 
+	 */
+	private void beginTiming() {
 		startTime = System.currentTimeMillis();
 	}
 	
-	protected void endTiming() {
+	/**
+	 * Stop timing execution.
+	 */
+	private void endTiming() {
 		long nEndTime = System.currentTimeMillis();
 		long nDuration = nEndTime - getStartTime();
 		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
@@ -197,7 +256,7 @@ public abstract class SWTGuitarExecutor {
 		GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
 	}
 	
-	protected void initTerminalComponents() {
+	private void initTerminalComponents() {
 		List<FullComponentType> cTerminalList = getXmlConfig().getTerminalComponents().getFullComponent();
 
 		for (FullComponentType cTermWidget : cTerminalList) {
@@ -209,7 +268,7 @@ public abstract class SWTGuitarExecutor {
 		}
 	}
 	
-	protected void initIgnoredComponents() {
+	private void initIgnoredComponents() {
 		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
 		ComponentListType ignoredAll = getXmlConfig().getIgnoredComponents();
 
