@@ -4,21 +4,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TimeZone;
 
-import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
 import edu.umd.cs.guitar.model.SWTApplication;
-import edu.umd.cs.guitar.model.SWTConstants;
-import edu.umd.cs.guitar.model.data.AttributesType;
-import edu.umd.cs.guitar.model.data.ComponentListType;
-import edu.umd.cs.guitar.model.data.ComponentType;
 import edu.umd.cs.guitar.model.data.Configuration;
-import edu.umd.cs.guitar.model.data.FullComponentType;
-import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
-import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
 import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 
@@ -188,9 +178,6 @@ public abstract class SWTGuitarExecutor {
 	 * that it can perform necessary setup.
 	 */
 	protected void onBeforeExecute() {		
-		initTerminalComponents();
-		initIgnoredComponents();
-		
 		beginTiming();
 	}
 
@@ -239,39 +226,5 @@ public abstract class SWTGuitarExecutor {
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
 	}
-	
-	private void initTerminalComponents() {
-		List<FullComponentType> cTerminalList = getXmlConfig().getTerminalComponents().getFullComponent();
-
-		for (FullComponentType cTermWidget : cTerminalList) {
-			ComponentType component = cTermWidget.getComponent();
-			AttributesType attributes = component.getAttributes();
-			if (attributes != null) {
-				SWTConstants.sTerminalWidgetSignature.add(new AttributesTypeWrapper(component.getAttributes()));
-			}
-		}
-	}
-	
-	private void initIgnoredComponents() {
-		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
-		ComponentListType ignoredAll = getXmlConfig().getIgnoredComponents();
-
-		if (ignoredAll != null)
-			for (FullComponentType fullComp : ignoredAll.getFullComponent()) {
-				ComponentType comp = fullComp.getComponent();
-
-				if (comp == null) {
-					ComponentType win = fullComp.getWindow();
-					ComponentTypeWrapper winAdapter = new ComponentTypeWrapper(win);
-					String ID = winAdapter.getFirstValueByName(GUITARConstants.ID_TAG_NAME);
-					if (ID != null) {
-						SWTConstants.sIgnoredWins.add(ID);
-					}
-
-				} else {
-					lIgnoredComps.add(fullComp);
-				}
-			}
-	}
-	
+		
 }

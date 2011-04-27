@@ -28,13 +28,25 @@
  */
 package edu.umd.cs.guitar.ripper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.umd.cs.guitar.model.GIDGenerator;
+import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
+import edu.umd.cs.guitar.model.SWTConstants;
 import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
+import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.ComponentListType;
+import edu.umd.cs.guitar.model.data.ComponentType;
+import edu.umd.cs.guitar.model.data.FullComponentType;
 import edu.umd.cs.guitar.model.data.GUIStructure;
 import edu.umd.cs.guitar.model.data.LogWidget;
 import edu.umd.cs.guitar.model.data.ObjectFactory;
+import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
+import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
+import edu.umd.cs.guitar.ripper.filter.GComponentFilter;
+import edu.umd.cs.guitar.ripper.filter.SWTIgnoreWidgetFilter;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -96,6 +108,8 @@ public class SWTRipper extends SWTGuitarExecutor {
 		
 		monitor = new SWTRipperMonitor(this.config, getApplication());
 		ripper = initRipper();
+		initIgnoredComponents(ripper);
+		initTerminalComponents();
 	}
 	
 	// initialize the ripper
@@ -109,6 +123,46 @@ public class SWTRipper extends SWTGuitarExecutor {
 		
 		return ripper;
 	}
+	
+	private void initTerminalComponents() {
+		List<FullComponentType> cTerminalList = getXmlConfig().getTerminalComponents().getFullComponent();
+
+		for (FullComponentType cTermWidget : cTerminalList) {
+			ComponentType component = cTermWidget.getComponent();
+			AttributesType attributes = component.getAttributes();
+			if (attributes != null) {
+				// TODO don't use global variable
+				SWTConstants.sTerminalWidgetSignature.add(new AttributesTypeWrapper(component.getAttributes()));
+			}
+		}
+	}
+	
+	private void initIgnoredComponents(Ripper ripper) {
+		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
+		ComponentListType ignoredAll = getXmlConfig().getIgnoredComponents();
+
+		if (ignoredAll != null) {
+			for (FullComponentType fullComp : ignoredAll.getFullComponent()) {
+				ComponentType comp = fullComp.getComponent();
+
+				if (comp == null) {
+					ComponentType win = fullComp.getWindow();
+					ComponentTypeWrapper winAdapter = new ComponentTypeWrapper(win);
+					String ID = winAdapter.getFirstValueByName(GUITARConstants.ID_TAG_NAME);
+					if (ID != null) {
+						SWTConstants.sIgnoredWins.add(ID);
+					}
+
+				} else {
+					lIgnoredComps.add(fullComp);
+				}
+			}
+		}
+		
+		GComponentFilter filter = new SWTIgnoreWidgetFilter(lIgnoredComps);
+		ripper.addComponentFilter(filter);
+	}
+
 	
 	/**
 	 * Execute the ripper.

@@ -42,9 +42,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	// monitor to delegate actions shared with replayer to
 	private final SWTMonitor monitor;
 
-	private List<String> sRootWindows = new ArrayList<String>();
-
-	private List<String> sIgnoreWindowList = new ArrayList<String>();
+	private List<String> windowsToIgnore = new ArrayList<String>();
 
 	/**
 	 * Temporary list of windows opened during the expand event is being
@@ -72,7 +70,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		this.configuration = config;
 		this.application = app;
 		this.monitor = new SWTMonitor(configuration, app);
-		
+						
 		// don't store application.getDisplay because it's still null at this point 
 	}
 
@@ -84,17 +82,8 @@ public class SWTRipperMonitor extends GRipperMonitor {
 			@Override
 			public void run() {
 				synchronized (retWindowList) {
-					if (application.getDisplay().isDisposed()) {
-						throw new AssertionError("display is disposed");
-					}
 					for (Shell shell : application.getDisplay().getShells()) {
-						if (!isValidRootWindow(shell)) {
-							continue;
-						}
-
-						if (sRootWindows.size() == 0
-								|| (sRootWindows.contains(shell.getText()))) {
-
+						if (isValidRootWindow(shell)) {
 							GWindow gWindow = new SWTWindow(shell);
 							retWindowList.add(gWindow);
 						}
@@ -175,7 +164,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	public boolean isIgnoredWindow(GWindow window) {
 		String sWindow = window.getTitle();
 		// TODO: Ignore template
-		return (this.sIgnoreWindowList.contains(sWindow));
+		return windowsToIgnore.contains(sWindow);
 	}
 
 	
