@@ -78,7 +78,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	public SWTRipper(SWTRipperConfiguration config) {
 		this(config, Thread.currentThread());
@@ -95,7 +95,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	public SWTRipper(SWTRipperConfiguration config, Thread guiThread) {
 		super(config, guiThread);

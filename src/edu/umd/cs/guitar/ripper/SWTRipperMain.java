@@ -68,7 +68,7 @@ public class SWTRipperMain {
             }
                
             SWTRipper swtRipper = new SWTRipper(configuration, Thread.currentThread());
-            new SWTApplicationRunner(swtRipper).run();
+            new SWTGuitarRunner(swtRipper).run();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println();

@@ -51,7 +51,7 @@ public abstract class SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	protected SWTGuitarExecutor(SWTGuitarConfiguration config) {
 		this(config, Thread.currentThread());
@@ -68,7 +68,7 @@ public abstract class SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	protected SWTGuitarExecutor(SWTGuitarConfiguration config, Thread guiThread) {
 		if (config == null) {

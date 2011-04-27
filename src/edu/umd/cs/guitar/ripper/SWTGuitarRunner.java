@@ -12,7 +12,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * @author Gabe Gorelick
  * 
  */
-public class SWTApplicationRunner {
+public class SWTGuitarRunner {
 
 	private final SWTGuitarExecutor executor;
 	private final Thread executorThread;
@@ -24,7 +24,7 @@ public class SWTApplicationRunner {
 	 */
 	public static final String THREAD_NAME = "SWTGuitarExecutor";
 	
-	public SWTApplicationRunner(SWTGuitarExecutor exec) {
+	public SWTGuitarRunner(SWTGuitarExecutor exec) {
 		this.executor = exec;
 		executorThread = new Thread(new Runnable() {
 			@Override
@@ -67,7 +67,7 @@ public class SWTApplicationRunner {
 
 	/**
 	 * Set the name of the {@link Thread} that the
-	 * <code>SWTGuitarExecutor</code> will run on. By default, this is {@link SWTApplicationRunner#THREAD_NAME}
+	 * <code>SWTGuitarExecutor</code> will run on. By default, this is {@link SWTGuitarRunner#THREAD_NAME}
 	 * 
 	 * @param name
 	 *            the name of the thread
