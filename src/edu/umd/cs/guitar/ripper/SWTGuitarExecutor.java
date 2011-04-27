@@ -1,7 +1,6 @@
 package edu.umd.cs.guitar.ripper;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -98,25 +97,10 @@ public abstract class SWTGuitarExecutor {
 		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
 		
 		app.setTimeout(config.getGuiStartTimeout());		
-		app.setInitialWait(config.getInitialWaitTime());
-		
-		// add arguments
-		if (config.getArgumentList() != null) {
-			String[] args = config.getArgumentList().split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-			app.setArgsToApp(args);
-		}
-		
-		// add URLs
-		try {
-			if (config.getUrlList() != null) {
-				String[] urls = config.getUrlList().split(
-						GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-				for (String s : urls) {
-					app.addURL(new URL(s));
-				}
-			}
-		} catch (MalformedURLException e) {
-			GUITARLog.log.error(e);
+		app.setInitialWait(config.getInitialWaitTime());		
+		app.setArgsToApp(config.getArguments());
+		for (URL u : config.getUrls()) {
+			app.addURL(u);
 		}
 		
 		return app;

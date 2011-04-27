@@ -28,13 +28,17 @@
  */
 package edu.umd.cs.guitar.ripper;
 
+import java.net.URL;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 
 /**
  * This class provides the <code>main</code> method of SWTRipper. 
  * 
+ * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
@@ -50,6 +54,9 @@ public class SWTRipperMain {
 	 *            command line arguments
 	 */
     public static void main(String[] args) {
+    	CmdLineParser.registerHandler(String[].class, StringArrayOptionHandler.class);
+    	CmdLineParser.registerHandler(URL[].class, URLArrayOptionHandler.class);
+    	
         SWTRipperConfiguration configuration = new SWTRipperConfiguration();
         CmdLineParser parser = new CmdLineParser(configuration);
         

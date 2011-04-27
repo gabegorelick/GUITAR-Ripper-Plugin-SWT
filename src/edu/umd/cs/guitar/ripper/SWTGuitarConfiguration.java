@@ -1,5 +1,7 @@
 package edu.umd.cs.guitar.ripper;
 
+import java.net.URL;
+
 import org.kohsuke.args4j.Option;
 
 import edu.umd.cs.guitar.model.SWTApplication;
@@ -36,11 +38,11 @@ public abstract class SWTGuitarConfiguration {
 	@Option(name = "-cf", usage = "Configure file for the ripper defining terminal, ignored components and ignored windows", aliases = "--configure-file")
     private String configFile = "configuration.xml";
 
-	@Option(name = "-a", usage = "arguments for the Application Under Test, separated by a colon (:) ", aliases = "--arguments")
-    private String argumentList;
+	@Option(name = "-a", usage = "arguments for the Application Under Test", aliases = "--arguments")
+    private String[] arguments = new String[0];
 
-    @Option(name = "-u", usage = "URLs for the Application Under Test, separated by a colon (:) ", aliases = "--urls")
-    private String urlList;
+    @Option(name = "-u", usage = "URLs for the Application Under Test", aliases = "--urls")
+    private URL[] urls = new URL[0];
 	
 	
     // getters and setters
@@ -93,21 +95,20 @@ public abstract class SWTGuitarConfiguration {
 		return configFile;
 	}
 	
-	public void setArgumentList(String argumentList) {
-		this.argumentList = argumentList;
+	public void setArguments(String[] arguments) {
+		this.arguments = arguments;
 	}
 
-	public String getArgumentList() {
-		return argumentList;
+	public String[] getArguments() {
+		return arguments;
 	}
 
-	// TODO use Args4j option handlers to make this array of URLs instead
-	public void setUrlList(String urlList) {
-		this.urlList = urlList;
+	public void setUrls(URL[] urls) {
+		this.urls = urls;
 	}
 
-	public String getUrlList() {
-		return urlList;
+	public URL[] getUrls() {
+		return urls;
 	}
 
 }
