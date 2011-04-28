@@ -43,6 +43,10 @@ import org.kohsuke.args4j.spi.StringArrayOptionHandler;
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
 public class SWTRipperMain {
+	
+	private SWTRipperMain() {
+		// this space intentionally left blank
+	}
 
 	/**
 	 * The main entry point into SWTRipper. Used by scripts to run the ripper.

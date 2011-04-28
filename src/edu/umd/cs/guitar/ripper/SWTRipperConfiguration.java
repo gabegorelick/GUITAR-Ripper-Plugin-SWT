@@ -31,8 +31,11 @@ package edu.umd.cs.guitar.ripper;
 import org.kohsuke.args4j.Option;
 
 /**
- * Class contains the runtime configurations of SWT GUITAR Ripper
+ * Configuration specific to {@link SWTRripper}. The configuration options
+ * held by this class can be set through its setter methods or by passing
+ * and instance of this class to an Args4j {@code CmdLineParser}.
  * 
+ * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
