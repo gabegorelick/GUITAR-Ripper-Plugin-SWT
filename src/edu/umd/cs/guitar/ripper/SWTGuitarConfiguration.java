@@ -46,7 +46,7 @@ public abstract class SWTGuitarConfiguration {
 	@Option(name = "-i", usage = "initial waiting time for the GUI to get stablized (in milliseconds)", aliases = "--initial-wait")
 	private int initialWaitTime = 0;
 
-	@Option(name = "-at", usage = "maximum time to wait for the GUI to start (in milliseconds)", aliases = "--gui-start-timeout")
+	@Option(name = "-mt", usage = "maximum time to wait for the GUI to start (in milliseconds)", aliases = "--gui-start-timeout")
 	private int guiStartTimeout = SWTApplication.DEFAULT_TIMEOUT;
 
 	// Application Under Test parameters
