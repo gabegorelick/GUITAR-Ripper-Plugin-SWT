@@ -42,9 +42,6 @@
 		<pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
 		<pathelement location="${lib.dir}/GUITARModel-Core.jar"/>
 		<pathelement location="${lib.dir}/GUIRipper-Core.jar"/>
-
-		<!-- swtmodel.jar is currently copied from the ripper job by Jenkins at runtime -->
-		<!-- TODO when we do a release, make sure we include swtmodel.jar in lib directly so that it can build without Jenkins -->
 		<pathelement location="${swtmodel.jar}"/>
 	</path>
 
@@ -60,7 +57,8 @@
 
 	<target name="build" depends="init,build-model">
 		<echo message="${ant.project.name}: ${ant.file}"/>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" source="${source}" target="${target}">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="${build.dir}" 
+				source="${source}" target="${target}" includeantruntime="false">
 			<src path="${src.dir}"/>
 			<classpath refid="SWTRipper.classpath"/>
 		</javac>
