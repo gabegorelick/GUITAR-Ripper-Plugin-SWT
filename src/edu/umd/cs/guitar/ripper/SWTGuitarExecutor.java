@@ -82,7 +82,18 @@ public abstract class SWTGuitarExecutor {
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
 	}
 	
-	// initialize the SWTApplication
+	/**
+	 * initialize the SWTApplication
+	 * 
+	 * @param config
+	 * 		swt configuration
+	 * @param guiThread
+	 * 		thread we will be running this on
+	 * 
+	 * @return 
+	 * 		the application we have initialized
+	 * 
+	 */
 	private SWTApplication initSWTApplication(SWTGuitarConfiguration config, Thread guiThread) {
 		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
 		
@@ -96,7 +107,12 @@ public abstract class SWTGuitarExecutor {
 		return app;
 	}
 	
-	// load the config file (the XML one that lists ignored components)
+	/**
+	 * load the config file (the XML one that lists ignored components)
+	 * 
+	 * @return conf
+	 * 		
+	 */
 	private Configuration loadXmlConfig() {
 		Configuration conf = null;
 

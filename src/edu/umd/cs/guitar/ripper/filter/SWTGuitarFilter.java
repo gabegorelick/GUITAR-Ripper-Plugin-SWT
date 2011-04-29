@@ -3,6 +3,11 @@ package edu.umd.cs.guitar.ripper.filter;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GWindow;
 
+/**
+ * Filter class for SWT componenets
+ * @author Gabe Gorelick-Feldman
+ *
+ */
 public abstract class SWTGuitarFilter extends GComponentFilter {
 
 	protected SWTGuitarFilter() {

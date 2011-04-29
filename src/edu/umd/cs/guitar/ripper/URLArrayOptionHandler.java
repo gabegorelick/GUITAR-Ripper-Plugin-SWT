@@ -11,6 +11,13 @@ import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 
+
+
+/**
+ * A handler for options in url form. It will parse arguments for GUITAR.
+ * 
+ * @author Gabe Gorelick-Feldman
+ */
 public class URLArrayOptionHandler extends OptionHandler<URL[]> {
 
 	public URLArrayOptionHandler(CmdLineParser parser, OptionDef option,
@@ -19,6 +26,15 @@ public class URLArrayOptionHandler extends OptionHandler<URL[]> {
 		super(parser, option, setter);
 	}
 
+	/**
+	 * parse the arguments and set the values for the ripper.
+	 * 
+	 * @param params
+	 * 		parameters to set
+	 * 
+	 * @return	
+	 * 		number of parameters set
+	 */
 	@Override
 	public int parseArguments(Parameters params) throws CmdLineException {
 		int counter = 0;
@@ -44,7 +60,6 @@ public class URLArrayOptionHandler extends OptionHandler<URL[]> {
 			}
 			counter++;
 		}
-
         this.setter.addValue(values.toArray(new URL[values.size()]));
 		return counter;
 	}
