@@ -112,7 +112,11 @@ public class SWTRipper extends SWTGuitarExecutor {
 		initTerminalComponents();
 	}
 	
-	// initialize the ripper
+	/**
+	 * initialize the ripper
+	 * 
+	 * @return the ripper to use 
+	 */
 	private Ripper initRipper() {
 		Ripper ripper = new Ripper(GUITARLog.log);
 				
@@ -123,7 +127,8 @@ public class SWTRipper extends SWTGuitarExecutor {
 		
 		return ripper;
 	}
-	
+	/**initialize the terminal components
+	 */
 	private void initTerminalComponents() {
 		List<FullComponentType> cTerminalList = getXmlConfig().getTerminalComponents().getFullComponent();
 
@@ -136,7 +141,12 @@ public class SWTRipper extends SWTGuitarExecutor {
 			}
 		}
 	}
-	
+	/**initialize components the ripper will ignore
+	 * 
+	 * 
+	 * @param ripper
+	 * 		ripper that will need to find components to ignore
+	 */
 	private void initIgnoredComponents(Ripper ripper) {
 		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
 		ComponentListType ignoredAll = getXmlConfig().getIgnoredComponents();

@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/GUITARModel-Core.jar" sourcepath="/home/gabe/Code/cmsc435/GUITARModel-Core"/>
 	<classpathentry kind="lib" path="lib/GUIRipper-Core.jar" sourcepath="/home/gabe/Code/cmsc435/GUIRipper-Core/src"/>
-	<classpathentry kind="lib" path="lib/swt-linux.jar" sourcepath="/home/gabe/Code/cmsc435/swt-src.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SWTModel"/>
+	<classpathentry kind="lib" path="lib/swt-windows.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

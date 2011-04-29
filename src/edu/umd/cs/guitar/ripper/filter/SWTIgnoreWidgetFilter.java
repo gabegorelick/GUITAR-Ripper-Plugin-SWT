@@ -37,6 +37,7 @@ public class SWTIgnoreWidgetFilter extends SWTGuitarFilter {
 
 	private final List<FullComponentType> ignoredComponents;
 	
+	
 	public SWTIgnoreWidgetFilter(List<FullComponentType> ignoredComponents) {
 		super();
 		this.ignoredComponents = ignoredComponents;
