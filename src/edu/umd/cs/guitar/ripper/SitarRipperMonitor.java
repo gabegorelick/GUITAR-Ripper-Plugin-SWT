@@ -36,30 +36,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
-import edu.umd.cs.guitar.event.SWTDefaultAction;
+import edu.umd.cs.guitar.event.SitarDefaultAction;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
-import edu.umd.cs.guitar.model.SWTApplication;
-import edu.umd.cs.guitar.model.SWTWindow;
-import edu.umd.cs.guitar.model.swtwidgets.SWTWidget;
+import edu.umd.cs.guitar.model.SitarApplication;
+import edu.umd.cs.guitar.model.SitarWindow;
+import edu.umd.cs.guitar.model.swtwidgets.SitarWidget;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Monitor for {@link SWTRipper} to handle SWT specific features. Adapted from
+ * Monitor for {@link SitarRipper} to handle SWT specific features. Adapted from
  * <code>JFCRipperMonitor</code>.
  * 
  * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
-public class SWTRipperMonitor extends GRipperMonitor {
+public class SitarRipperMonitor extends GRipperMonitor {
 
-	private final SWTApplication application;
-	private final SWTRipperConfiguration configuration;
+	private final SitarApplication application;
+	private final SitarRipperConfiguration configuration;
 	
 	// monitor to delegate actions shared with replayer to
-	private final SWTMonitor monitor;
+	private final SitarMonitor monitor;
 
 	private List<String> windowsToIgnore = new ArrayList<String>();
 
@@ -79,16 +79,16 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	 *            ripper configuration
 	 * @param app
 	 */
-	public SWTRipperMonitor(SWTRipperConfiguration config, SWTApplication app) {
+	public SitarRipperMonitor(SitarRipperConfiguration config, SitarApplication app) {
 		super();
 		
 		if (config == null) {
-			config = new SWTRipperConfiguration();
+			config = new SitarRipperConfiguration();
 		}
 		
 		this.configuration = config;
 		this.application = app;
-		this.monitor = new SWTMonitor(configuration, app);
+		this.monitor = new SitarMonitor(configuration, app);
 						
 		// don't store application.getDisplay because it's still null at this point 
 	}
@@ -103,7 +103,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 				synchronized (retWindowList) {
 					for (Shell shell : application.getDisplay().getShells()) {
 						if (isValidRootWindow(shell)) {
-							GWindow gWindow = new SWTWindow(shell);
+							GWindow gWindow = new SitarWindow(shell);
 							retWindowList.add(gWindow);
 						}
 					}
@@ -152,7 +152,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
 
 		for (Shell shell : tempOpenedWinStack) {
-			GWindow gWindow = new SWTWindow(shell);
+			GWindow gWindow = new SitarWindow(shell);
 			if (gWindow.isValid())
 				retWindows.addLast(gWindow);
 		}
@@ -167,7 +167,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void closeWindow(GWindow gWindow) {
-		SWTWindow sWindow = (SWTWindow) gWindow;
+		SitarWindow sWindow = (SitarWindow) gWindow;
 		final Shell shell = sWindow.getShell();
 
 		shell.getDisplay().syncExec(new Runnable() {
@@ -189,7 +189,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	
 	@Override
 	public void expandGUI(GComponent component) {
-		new SWTDefaultAction().perform(component);
+		new SitarDefaultAction().perform(component);
 		
 		// no need to wait for action, perform blocks until complete
 	}
@@ -236,7 +236,7 @@ public class SWTRipperMonitor extends GRipperMonitor {
 	@Override
 	protected boolean isExpandable(GComponent gComponent, GWindow window) {
 
-		Widget widget = ((SWTWidget) gComponent).getWidget();
+		Widget widget = ((SitarWidget) gComponent).getWidget();
 
 		String title = gComponent.getTitle();
 		if (title == null) {
@@ -268,14 +268,14 @@ public class SWTRipperMonitor extends GRipperMonitor {
 		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
 
 		for (Shell shell : tempClosedWinStack) {
-			GWindow gWindow = new SWTWindow(shell);
+			GWindow gWindow = new SitarWindow(shell);
 			if (gWindow.isValid())
 				retWindows.addLast(gWindow);
 		}
 		return retWindows;
 	}
 	
-	public SWTApplication getApplication() {
+	public SitarApplication getApplication() {
 		return application;
 	}
 

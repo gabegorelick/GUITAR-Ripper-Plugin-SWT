@@ -23,17 +23,17 @@ import java.net.URL;
 
 import org.kohsuke.args4j.Option;
 
-import edu.umd.cs.guitar.model.SWTApplication;
+import edu.umd.cs.guitar.model.SitarApplication;
 import edu.umd.cs.guitar.util.Util;
 
 /**
  * Superclass of all SWT GUITAR configuration objects. This class collects
- * configuration options common to SWTRipper and SWTReplayer.
+ * configuration options common to SitarRipper and SWTReplayer.
  * 
  * @author Gabe Gorelick
  * 
  */
-public abstract class SWTGuitarConfiguration {
+public abstract class SitarConfiguration {
 
 	@Option(name = "-?", usage = "print this help message", aliases = "--help")
 	private boolean help;
@@ -47,7 +47,7 @@ public abstract class SWTGuitarConfiguration {
 	private int initialWaitTime = 0;
 
 	@Option(name = "-mt", usage = "maximum time to wait for the GUI to start (in milliseconds)", aliases = "--gui-start-timeout")
-	private int guiStartTimeout = SWTApplication.DEFAULT_TIMEOUT;
+	private int guiStartTimeout = SitarApplication.DEFAULT_TIMEOUT;
 
 	// Application Under Test parameters
 

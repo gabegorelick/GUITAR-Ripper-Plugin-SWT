@@ -26,14 +26,14 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import edu.umd.cs.guitar.model.IO;
-import edu.umd.cs.guitar.model.SWTApplication;
+import edu.umd.cs.guitar.model.SitarApplication;
 import edu.umd.cs.guitar.model.data.Configuration;
 import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
  * <p>
- * This is the parent class of <code>SWTRipper</code> and
+ * This is the parent class of <code>SitarRipper</code> and
  * <code>SWTReplayer</code>. Responsible for abstracting away the differences
  * between the two and implementing common functionality.
  * </p>
@@ -46,21 +46,21 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * @author Gabe Gorelick
  * 
  */
-public abstract class SWTGuitarExecutor {
+public abstract class SitarExecutor {
 
-	private final SWTGuitarConfiguration config;
-	private final SWTApplication application;
+	private final SitarConfiguration config;
+	private final SitarApplication application;
 	
 	private final Configuration xmlConfig; 
 	
 	private long startTime;
 
 	/**
-	 * Constructs a new <code>SWTGuitarExecutor</code>. This constructor is
+	 * Constructs a new <code>SitarExecutor</code>. This constructor is
 	 * equivalent to
 	 * 
 	 * <pre>
-	 * SWTGuitarExecutor(config, Thread.currentThread())
+	 * SitarExecutor(config, Thread.currentThread())
 	 * </pre>
 	 * 
 	 * Consequently, this constructor must be called on the same thread that the
@@ -70,14 +70,14 @@ public abstract class SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	protected SWTGuitarExecutor(SWTGuitarConfiguration config) {
+	protected SitarExecutor(SitarConfiguration config) {
 		this(config, Thread.currentThread());
 	}
 
 	/**
-	 * Constructs a new <code>SWTGuitarExecutor</code>. The thread passed in is
+	 * Constructs a new <code>SitarExecutor</code>. The thread passed in is
 	 * the thread on which the SWT application under test runs. This is almost
 	 * always the <code>main</code> thread (and actually must be the
 	 * <code>main</code> thread on Cocoa).
@@ -87,11 +87,11 @@ public abstract class SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	protected SWTGuitarExecutor(SWTGuitarConfiguration config, Thread guiThread) {
+	protected SitarExecutor(SitarConfiguration config, Thread guiThread) {
 		if (config == null) {
-			config = new SWTRipperConfiguration();
+			config = new SitarRipperConfiguration();
 		}
 		
 		this.config = config;
@@ -101,9 +101,9 @@ public abstract class SWTGuitarExecutor {
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
 	}
 	
-	// initialize the SWTApplication
-	private SWTApplication initSWTApplication(SWTGuitarConfiguration config, Thread guiThread) {
-		SWTApplication app = new SWTApplication(config.getMainClass(), guiThread);
+	// initialize the SitarApplication
+	private SitarApplication initSWTApplication(SitarConfiguration config, Thread guiThread) {
+		SitarApplication app = new SitarApplication(config.getMainClass(), guiThread);
 		
 		app.setTimeout(config.getGuiStartTimeout());		
 		app.setInitialWait(config.getInitialWaitTime());		
@@ -148,27 +148,27 @@ public abstract class SWTGuitarExecutor {
 	}
 
 	/**
-	 * Return the monitor used by this {@code SWTGuitarExecutor}. As their is no
+	 * Return the monitor used by this {@code SitarExecutor}. As their is no
 	 * common superclass for all monitors, this method returns an {@code Object}
 	 * . Subclasses are encouraged to modify the signature of their
 	 * implementations of this method to return a more appropriate type, e.g.
-	 * {@code SWTRipperMonitor} or {@code SWTReplayerMonitor}.
+	 * {@code SitarRipperMonitor} or {@code SWTReplayerMonitor}.
 	 * 
 	 * @return the monitor used by this executor
 	 */
 	public abstract Object getMonitor();
 
 	/**
-	 * Get the {@code SWTApplication} used by this {@code SWTGuitarExecutor}.
+	 * Get the {@code SitarApplication} used by this {@code SitarExecutor}.
 	 * 
-	 * @return the {@code SWTApplication} that models the GUI
+	 * @return the {@code SitarApplication} that models the GUI
 	 */
-	public SWTApplication getApplication() {
+	public SitarApplication getApplication() {
 		return application;
 	}
 	
 	/**
-	 * Get the time that the {@code SWTGuitarExecutor} starting executing. This
+	 * Get the time that the {@code SitarExecutor} starting executing. This
 	 * is set by {@link #beginTiming()}. Useful if subclasses want to log how
 	 * long execution took. 
 	 * 
@@ -181,11 +181,11 @@ public abstract class SWTGuitarExecutor {
 	}
 
 	/**
-	 * Get the {@code Configuration} used by this {@code SWTGuitarExecutor}. The
+	 * Get the {@code Configuration} used by this {@code SitarExecutor}. The
 	 * {@code Configuration} stores user-specified ignored and terminal
 	 * components.
 	 * 
-	 * @return the {@code Configuration} used by this {@code SWTGuitarExecutor}
+	 * @return the {@code Configuration} used by this {@code SitarExecutor}
 	 */
 	protected Configuration getXmlConfig() {
 		return xmlConfig;
@@ -201,7 +201,7 @@ public abstract class SWTGuitarExecutor {
 	}
 
 	/**
-	 * Run this {@code SWTGuitarExecutor}. This method simply calls
+	 * Run this {@code SitarExecutor}. This method simply calls
 	 * {@link #onBeforeExecute()}, {@link #onExecute()}, and then
 	 * {@link #onAfterExecute()}.
 	 */
@@ -212,7 +212,7 @@ public abstract class SWTGuitarExecutor {
 	}
 
 	/**
-	 * Execute the {@code SWTGuitarExecutor}. Called after
+	 * Execute the {@code SitarExecutor}. Called after
 	 * {@link #onBeforeExecute()} and before {@link #onAfterExecute()}.
 	 * Subclasses should execute their respective tools in this method.
 	 */

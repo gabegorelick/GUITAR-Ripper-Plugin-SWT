@@ -19,20 +19,20 @@
  */
 package edu.umd.cs.guitar.ripper;
 
-import edu.umd.cs.guitar.model.SWTApplication;
+import edu.umd.cs.guitar.model.SitarApplication;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Contains actions common to {@link SWTRipperMonitor} and
+ * Contains actions common to {@link SitarRipperMonitor} and
  * {@link SWTReplayerMonitor}.
  * 
  * @author Gabe Gorelick
  */
-public class SWTMonitor {
+public class SitarMonitor {
 
-	private final SWTApplication application;
+	private final SitarApplication application;
 	
-	public SWTMonitor(SWTGuitarConfiguration config, SWTApplication app) {
+	public SitarMonitor(SitarConfiguration config, SitarApplication app) {
 		this.application = app;
 	}
 	

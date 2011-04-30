@@ -28,50 +28,56 @@
  */
 package edu.umd.cs.guitar.ripper;
 
-import org.kohsuke.args4j.Option;
+import java.net.URL;
+
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
+
 
 /**
- * Configuration specific to {@link SWTRripper}. The configuration options
- * held by this class can be set through its setter methods or by passing
- * and instance of this class to an Args4j {@code CmdLineParser}.
+ * This class provides the <code>main</code> method of SitarRipper. 
  * 
  * @author Gabe Gorelick
  * @author <a href="mailto:mattkse@gmail.com"> Matt Kirn </a>
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  */
-public class SWTRipperConfiguration extends SWTGuitarConfiguration {
+public class SitarRipperMain {
+	
+	private SitarRipperMain() {
+		// this space intentionally left blank
+	}
 
-	@Option(name = "-g", usage = "destination GUI file path", aliases = "--gui-file")
-	private String guiFile = "GUITAR-Default.GUI";
-	
-	@Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
-	private String logWidgetFile = "log_widget.xml";
-	
-    // @Option(name = "-iw", usage =
-    // "file  containing a list of windows should be ignored during ripping ",
-    // aliases = "--ignore-window-file")
-    // static public String IGNORE_WIN_FILE;
-    //
-    // @Option(name = "-ic", usage =
-    // "file  containing a list of components should be ignored during ripping ",
-    // aliases = "--ignore-component-file")
-    // static public String IGNORE_COMPONENT_FILE;
+	/**
+	 * The main entry point into SitarRipper. Used by scripts to run the ripper.
+	 * Can also be invoked manually on the command line by users, but this is
+	 * not recommended as then the user would have to manage SWTGuitar's
+	 * classpath.
+	 * 
+	 * @param args
+	 *            command line arguments
+	 */
+    public static void main(String[] args) {
+    	CmdLineParser.registerHandler(String[].class, StringArrayOptionHandler.class);
+    	CmdLineParser.registerHandler(URL[].class, URLArrayOptionHandler.class);
+    	
+        SitarRipperConfiguration configuration = new SitarRipperConfiguration();
+        CmdLineParser parser = new CmdLineParser(configuration);
+        
+        try {
+            parser.parseArgument(args);
+            if (configuration.getHelp()) {
+            	parser.printUsage(System.err);
+            	return;
+            }
+               
+            SitarRipper swtRipper = new SitarRipper(configuration, Thread.currentThread());
+            new SitarRunner(swtRipper).run();
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println();
+            parser.printUsage(System.err);
+        }
+    }
     
-	
-	public void setGuiFile(String guiFile) {
-		this.guiFile = guiFile;
-	}
-
-	public String getGuiFile() {
-		return guiFile;
-	}
-	
-	public void setLogWidgetFile(String logWidgetFile) {
-		this.logWidgetFile = logWidgetFile;
-	}
-
-	public String getLogWidgetFile() {
-		return logWidgetFile;
-	}
-	
 }

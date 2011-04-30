@@ -34,8 +34,8 @@ import java.util.List;
 import edu.umd.cs.guitar.model.GIDGenerator;
 import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
-import edu.umd.cs.guitar.model.SWTConstants;
-import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
+import edu.umd.cs.guitar.model.SitarConstants;
+import edu.umd.cs.guitar.model.SitarDefaultIDGenerator;
 import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.ComponentListType;
 import edu.umd.cs.guitar.model.data.ComponentType;
@@ -46,7 +46,7 @@ import edu.umd.cs.guitar.model.data.ObjectFactory;
 import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
 import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
 import edu.umd.cs.guitar.ripper.filter.GComponentFilter;
-import edu.umd.cs.guitar.ripper.filter.SWTIgnoreWidgetFilter;
+import edu.umd.cs.guitar.ripper.filter.SitarIgnoreWidgetFilter;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -57,18 +57,18 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * @author <a href="mailto:atloeb@gmail.com"> Alex Loeb </a>
  * 
  */
-public class SWTRipper extends SWTGuitarExecutor {
+public class SitarRipper extends SitarExecutor {
 
-	private final SWTRipperConfiguration config;
-	private final SWTRipperMonitor monitor;
+	private final SitarRipperConfiguration config;
+	private final SitarRipperMonitor monitor;
 	private final Ripper ripper;
 
 	/**
-	 * Constructs a new <code>SWTRipper</code>. This constructor is equivalent
+	 * Constructs a new <code>SitarRipper</code>. This constructor is equivalent
 	 * to
 	 * 
 	 * <pre>
-	 * SWTRipper(config, Thread.currentThread())
+	 * SitarRipper(config, Thread.currentThread())
 	 * </pre>
 	 * 
 	 * Consequently, this constructor must be called on the same thread that the
@@ -78,14 +78,14 @@ public class SWTRipper extends SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	public SWTRipper(SWTRipperConfiguration config) {
+	public SitarRipper(SitarRipperConfiguration config) {
 		this(config, Thread.currentThread());
 	}
 
 	/**
-	 * Constructs a new <code>SWTRipper</code>. The thread passed in is the
+	 * Constructs a new <code>SitarRipper</code>. The thread passed in is the
 	 * thread on which the SWT application under test runs. This is almost
 	 * always the <code>main</code> thread (and actually must be the
 	 * <code>main</code> thread on Cocoa).
@@ -95,18 +95,18 @@ public class SWTRipper extends SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	public SWTRipper(SWTRipperConfiguration config, Thread guiThread) {
+	public SitarRipper(SitarRipperConfiguration config, Thread guiThread) {
 		super(config, guiThread);
 		
 		if (config == null) {
-			this.config = new SWTRipperConfiguration();
+			this.config = new SitarRipperConfiguration();
 		} else {
 			this.config = config;
 		}
 		
-		monitor = new SWTRipperMonitor(this.config, getApplication());
+		monitor = new SitarRipperMonitor(this.config, getApplication());
 		ripper = initRipper();
 		initIgnoredComponents(ripper);
 		initTerminalComponents();
@@ -118,7 +118,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 				
 		ripper.setMonitor(monitor);
 		
-		GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
+		GIDGenerator idGenerator = SitarDefaultIDGenerator.getInstance();
 		ripper.setIDGenerator(idGenerator);
 		
 		return ripper;
@@ -132,7 +132,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 			AttributesType attributes = component.getAttributes();
 			if (attributes != null) {
 				// TODO don't use global variable
-				SWTConstants.sTerminalWidgetSignature.add(new AttributesTypeWrapper(component.getAttributes()));
+				SitarConstants.sTerminalWidgetSignature.add(new AttributesTypeWrapper(component.getAttributes()));
 			}
 		}
 	}
@@ -150,7 +150,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 					ComponentTypeWrapper winAdapter = new ComponentTypeWrapper(win);
 					String ID = winAdapter.getFirstValueByName(GUITARConstants.ID_TAG_NAME);
 					if (ID != null) {
-						SWTConstants.sIgnoredWins.add(ID);
+						SitarConstants.sIgnoredWins.add(ID);
 					}
 
 				} else {
@@ -159,7 +159,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 			}
 		}
 		
-		GComponentFilter filter = new SWTIgnoreWidgetFilter(lIgnoredComps);
+		GComponentFilter filter = new SitarIgnoreWidgetFilter(lIgnoredComps);
 		ripper.addComponentFilter(filter);
 	}
 
@@ -174,7 +174,7 @@ public class SWTRipper extends SWTGuitarExecutor {
 		try {
 			ripper.execute();			
 		} catch (Exception e) {
-			GUITARLog.log.error("SWTRipper: ", e);
+			GUITARLog.log.error("SitarRipper: ", e);
 		}
 	}
 	
@@ -208,12 +208,12 @@ public class SWTRipper extends SWTGuitarExecutor {
 	}
 
 	/**
-	 * Get the {@code SWTRipperMonitor} used by this {@code SWTRipper}.
+	 * Get the {@code SitarRipperMonitor} used by this {@code SitarRipper}.
 	 * 
 	 * @return the monitor used by this ripper
 	 */
 	@Override
-	public SWTRipperMonitor getMonitor() {
+	public SitarRipperMonitor getMonitor() {
 		return monitor;
 	}
 

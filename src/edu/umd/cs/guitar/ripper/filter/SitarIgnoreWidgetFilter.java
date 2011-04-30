@@ -33,11 +33,11 @@ import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
  * @author Gabe Gorelick
  *
  */
-public class SWTIgnoreWidgetFilter extends SWTGuitarFilter {
+public class SitarIgnoreWidgetFilter extends SitarFilter {
 
 	private final List<FullComponentType> ignoredComponents;
 	
-	public SWTIgnoreWidgetFilter(List<FullComponentType> ignoredComponents) {
+	public SitarIgnoreWidgetFilter(List<FullComponentType> ignoredComponents) {
 		super();
 		this.ignoredComponents = ignoredComponents;
 	}

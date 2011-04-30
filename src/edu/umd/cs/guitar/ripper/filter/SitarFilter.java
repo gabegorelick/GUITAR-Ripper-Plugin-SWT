@@ -22,9 +22,9 @@ package edu.umd.cs.guitar.ripper.filter;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GWindow;
 
-public abstract class SWTGuitarFilter extends GComponentFilter {
+public abstract class SitarFilter extends GComponentFilter {
 
-	protected SWTGuitarFilter() {
+	protected SitarFilter() {
 		// this space intentionally left blank
 	}
 	
