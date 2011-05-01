@@ -128,6 +128,8 @@ public class SitarRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void setUp() {
+		monitor.disableExit();
+		
 		// sleep until application is ready
 		application.connect();
 	}

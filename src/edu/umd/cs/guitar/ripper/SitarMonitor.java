@@ -19,6 +19,8 @@
  */
 package edu.umd.cs.guitar.ripper;
 
+import java.security.Permission;
+
 import edu.umd.cs.guitar.model.SitarApplication;
 import edu.umd.cs.guitar.util.GUITARLog;
 
@@ -31,9 +33,11 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class SitarMonitor {
 
 	private final SitarApplication application;
+	private final SecurityManager oldManager;
 	
 	public SitarMonitor(SitarConfiguration config, SitarApplication app) {
 		this.application = app;
+		oldManager = System.getSecurityManager();
 	}
 	
 	public void cleanUp() {
@@ -44,6 +48,59 @@ public class SitarMonitor {
 			}
 		});
 		GUITARLog.log.info("Display disposed");
+		
+		// re-enable exiting the JVM
+		System.setSecurityManager(oldManager);
+	}
+
+	/**
+	 * Disable attempts by the application under test to exit the JVM. Clients
+	 * that use this method should call {@link #cleanUp()} to re-enable exiting
+	 * the JVM, otherwise the JVM may never terminate.
+	 * 
+	 * @see ExitException
+	 */
+	public void disableExit() {
+		SecurityManager manager = new SecurityManager() {
+			@Override
+			public void checkPermission(Permission perm) {
+				// allow anything
+			}
+			
+			@Override
+	        public void checkPermission(Permission perm, Object context) {
+				// allow anything
+	        }
+			
+			@Override
+			public void checkExit(int status) {
+				super.checkExit(status);
+				throw new ExitException();
+			}
+		};
+		System.setSecurityManager(manager);
+		
+		// block uncaught exceptions so we can finish up
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			public void uncaughtException(Thread t, Throwable e) {
+				if (e instanceof ExitException) {
+					GUITARLog.log.warn("Application tried to call System.exit");
+				} else {
+					GUITARLog.log.error("Uncaught exception", e);
+				}
+				
+				// dispose GUI and restore old SecurityManager so we can exit
+				cleanUp();
+			}
+		});
+	}
+
+	/**
+	 * Thrown to indicate the application under test has attempted to exit the
+	 * JVM, e.g. with a call to {@link System#exit(int)}.
+	 */
+	protected static class ExitException extends SecurityException {
+		private static final long serialVersionUID = 1L;
 	}
 	
 }
