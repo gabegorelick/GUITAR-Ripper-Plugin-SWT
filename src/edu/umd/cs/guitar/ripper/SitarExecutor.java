@@ -21,12 +21,14 @@ package edu.umd.cs.guitar.ripper;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.security.Permission;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import edu.umd.cs.guitar.model.IO;
 import edu.umd.cs.guitar.model.SitarApplication;
+import edu.umd.cs.guitar.model.SitarApplication.ExitException;
 import edu.umd.cs.guitar.model.data.Configuration;
 import edu.umd.cs.guitar.util.DefaultFactory;
 import edu.umd.cs.guitar.util.GUITARLog;
@@ -54,6 +56,8 @@ public abstract class SitarExecutor {
 	private final Configuration xmlConfig; 
 	
 	private long startTime;
+	
+	private final SecurityManager oldManager;
 
 	/**
 	 * Constructs a new <code>SitarExecutor</code>. This constructor is
@@ -97,6 +101,7 @@ public abstract class SitarExecutor {
 		this.config = config;
 		this.application = initSWTApplication(config, guiThread);
 		this.xmlConfig = loadXmlConfig();
+		oldManager = System.getSecurityManager();
 		
 		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
 	}
@@ -198,6 +203,7 @@ public abstract class SitarExecutor {
 	 */
 	protected void onBeforeExecute() {		
 		beginTiming();
+		disableExit();
 	}
 
 	/**
@@ -226,6 +232,7 @@ public abstract class SitarExecutor {
 	 */
 	protected void onAfterExecute() {
 		endTiming();
+		enableExit();
 	}
 	
 	/**
@@ -244,6 +251,39 @@ public abstract class SitarExecutor {
 		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
+	}
+	
+	/**
+	 * Disable attempts by the application under test to exit the JVM. Clients
+	 * that use this method should call {@link #enableExit()} to re-enable exiting
+	 * the JVM, otherwise the JVM may never terminate.
+	 * 
+	 * @see ExitException
+	 */
+	protected void disableExit() {
+		SecurityManager manager = new SecurityManager() {
+			@Override
+			public void checkPermission(Permission perm) {
+				// allow anything
+			}
+			
+			@Override
+	        public void checkPermission(Permission perm, Object context) {
+				// allow anything
+	        }
+			
+			@Override
+			public void checkExit(int status) {
+				super.checkExit(status);
+				throw new ExitException();
+			}
+		};
+		System.setSecurityManager(manager);
+	}
+	
+	protected void enableExit() {
+		// re-enable exiting the JVM
+		System.setSecurityManager(oldManager);
 	}
 		
 }
