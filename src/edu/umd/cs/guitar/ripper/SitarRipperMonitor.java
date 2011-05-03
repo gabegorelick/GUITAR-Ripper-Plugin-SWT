@@ -34,13 +34,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Widget;
 
-import edu.umd.cs.guitar.event.SitarDefaultAction;
 import edu.umd.cs.guitar.model.GComponent;
-import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
 import edu.umd.cs.guitar.model.SitarApplication;
+import edu.umd.cs.guitar.model.SitarGUIInteraction;
 import edu.umd.cs.guitar.model.SitarWindow;
 import edu.umd.cs.guitar.model.swtwidgets.SitarWidget;
 import edu.umd.cs.guitar.util.GUITARLog;
@@ -63,15 +61,10 @@ public class SitarRipperMonitor extends GRipperMonitor {
 
 	private List<String> windowsToIgnore = new ArrayList<String>();
 
-	/**
-	 * Temporary list of windows opened during the expand event is being
-	 * performed. Those windows are in a native form to prevent data loss.
-	 * 
-	 */
-	private volatile LinkedList<Shell> tempOpenedWinStack = new LinkedList<Shell>();
-	// TODO I don't think these have to be volatile
-	private volatile LinkedList<Shell> tempClosedWinStack = new LinkedList<Shell>();
-
+	// windows encountered during GUI expansion
+	private final LinkedList<Shell> openedWinStack;
+	private final LinkedList<Shell> closedWinStack;
+	
 	/**
 	 * Constructor
 	 * 
@@ -89,7 +82,10 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		this.configuration = config;
 		this.application = app;
 		this.monitor = new SitarMonitor(configuration, app);
-						
+		
+		openedWinStack = new LinkedList<Shell>();
+		closedWinStack = new LinkedList<Shell>();
+		
 		// don't store application.getDisplay because it's still null at this point 
 	}
 
@@ -111,25 +107,17 @@ public class SitarRipperMonitor extends GRipperMonitor {
 			}
 		});
 
-		// / Debugs:
+		// Debugs:
 		GUITARLog.log.debug("Root window size: " + retWindowList.size());
 		for (GWindow window : retWindowList) {
 			GUITARLog.log.debug("Window title: " + window.getTitle());
 		}
 
-		try {
-			// TODO this doesn't seem to do anything
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			GUITARLog.log.error(e);
-		}
 		return retWindowList;
 	}
 
 	@Override
-	public void setUp() {
-		monitor.disableExit();
-		
+	public void setUp() {		
 		// sleep until application is ready
 		application.connect();
 	}
@@ -141,19 +129,31 @@ public class SitarRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public boolean isNewWindowOpened() {
-		return (tempOpenedWinStack.size() > 0);
+		return !openedWinStack.isEmpty();
 	}
 
 	@Override
 	public boolean isWindowClosed() {
-		return (tempClosedWinStack.size() > 0);
+		return !closedWinStack.isEmpty();
 	}
 
 	@Override
 	public LinkedList<GWindow> getOpenedWindowCache() {
 		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
 
-		for (Shell shell : tempOpenedWinStack) {
+		for (Shell shell : openedWinStack) {
+			GWindow gWindow = new SitarWindow(shell);
+			if (gWindow.isValid())
+				retWindows.addLast(gWindow);
+		}
+		return retWindows;
+	}
+	
+	@Override
+	protected LinkedList<GWindow> getClosedWindowCache() {
+		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
+
+		for (Shell shell : closedWinStack) {
 			GWindow gWindow = new SitarWindow(shell);
 			if (gWindow.isValid())
 				retWindows.addLast(gWindow);
@@ -163,8 +163,8 @@ public class SitarRipperMonitor extends GRipperMonitor {
 
 	@Override
 	public void resetWindowCache() {
-		this.tempOpenedWinStack.clear();
-		this.tempClosedWinStack.clear();
+		openedWinStack.clear();
+		closedWinStack.clear();
 	}
 
 	@Override
@@ -187,13 +187,14 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		// TODO: Ignore template
 		return windowsToIgnore.contains(sWindow);
 	}
-
 	
 	@Override
 	public void expandGUI(GComponent component) {
-		new SitarDefaultAction().perform(component);
+		SitarWidget widget = (SitarWidget) component;
+		SitarGUIInteraction expansionData = widget.interact();
 		
-		// no need to wait for action, perform blocks until complete
+		openedWinStack.addAll(expansionData.getOpenedShells());
+		closedWinStack.addAll(expansionData.getClosedShells());
 	}
 
 	/**
@@ -217,64 +218,16 @@ public class SitarRipperMonitor extends GRipperMonitor {
 	}
 
 	/**
-	 * Check if a component is click-able.
-	 * 
-	 * @param component
-	 * @return true/false
+	 * @deprecated Redundant since {@link #expandGUI(GComponent)} checks for itself. 
+	 * @param gComponent
+	 * @param window
+	 * @return
 	 */
-	private boolean isClickable(final Widget widget) {
-		final AtomicBoolean disposed = new AtomicBoolean();
-		
-		widget.getDisplay().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				disposed.set(widget.isDisposed());
-			}
-		});
-		
-		return !disposed.get();
-	}
-
 	@Override
-	protected boolean isExpandable(GComponent gComponent, GWindow window) {
-
-		Widget widget = ((SitarWidget) gComponent).getWidget();
-
-		String title = gComponent.getTitle();
-		if (title == null) {
-			return false;
-		}
-		
-		if (title.isEmpty()) {
-			return false;
-		}
-		
-		if (!gComponent.isEnable()) {
-			GUITARLog.log.debug("Component is disabled");
-			return false;
-		}
-
-		if (!isClickable(widget)) {
-			return false;
-		}
-
-		if (gComponent.getTypeVal().equals(GUITARConstants.TERMINAL)) {
-			return false;
-		}
-		
+	@Deprecated
+	final boolean isExpandable(GComponent gComponent, GWindow window) {
+		// attempt to expand all widgets
 		return true;
-	}
-
-	@Override
-	protected LinkedList<GWindow> getClosedWindowCache() {
-		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
-
-		for (Shell shell : tempClosedWinStack) {
-			GWindow gWindow = new SitarWindow(shell);
-			if (gWindow.isValid())
-				retWindows.addLast(gWindow);
-		}
-		return retWindows;
 	}
 	
 	public SitarApplication getApplication() {
