@@ -25,7 +25,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
  * Contains actions common to {@link SitarRipperMonitor} and
- * {@link SWTReplayerMonitor}.
+ * {@code SWTReplayerMonitor}.
  * 
  * @author Gabe Gorelick
  */
@@ -33,7 +33,11 @@ public class SitarMonitor {
 
 	private final SitarApplication application;
 	
-	
+	/**
+	 * Constructor
+	 * @param config configuration
+	 * @param app the application to interact with
+	 */
 	public SitarMonitor(SitarConfiguration config, SitarApplication app) {
 		this.application = app;
 		
@@ -51,7 +55,12 @@ public class SitarMonitor {
 			}
 		});
 	}
-	
+
+	/**
+	 * Dispose of the GUI after execution is complete.
+	 * 
+	 * @see SitarRipperMonitor#cleanUp()
+	 */
 	public void cleanUp() {
 		application.getDisplay().syncExec(new Runnable() {
 			@Override
