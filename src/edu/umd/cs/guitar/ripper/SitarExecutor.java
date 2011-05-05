@@ -259,6 +259,7 @@ public abstract class SitarExecutor {
 	 * the JVM, otherwise the JVM may never terminate.
 	 * 
 	 * @see ExitException
+	 * @see #enableExit()
 	 */
 	protected void disableExit() {
 		SecurityManager manager = new SecurityManager() {
@@ -281,8 +282,12 @@ public abstract class SitarExecutor {
 		System.setSecurityManager(manager);
 	}
 	
+	/**
+	 * Re-enable closing the JVM. 
+	 * 
+	 * @see #disableExit()
+	 */
 	protected void enableExit() {
-		// re-enable exiting the JVM
 		System.setSecurityManager(oldManager);
 	}
 		

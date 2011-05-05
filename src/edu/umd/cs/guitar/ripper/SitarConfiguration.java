@@ -65,67 +65,170 @@ public abstract class SitarConfiguration {
 	
 	
     // getters and setters
-	
+
+	/**
+	 * Set whether to print the help message and quit.
+	 * 
+	 * @param help
+	 *            {@code true} to print help message
+	 * @see #getHelp()
+	 */
 	public void setHelp(boolean help) {
 		this.help = help;
 	}
 
+	/**
+	 * Get whether to print the help message and quit.
+	 * 
+	 * @return {@code true} to print help message
+	 * @see #setHelp(boolean)
+	 */
 	public boolean getHelp() {
 		return help;
 	}
 
+	/**
+	 * Set the path to the log file.
+	 * 
+	 * @param logFile
+	 *            path to log file
+	 * @see #getLogFile()
+	 */
 	public void setLogFile(String logFile) {
 		this.logFile = logFile;
 	}
 
+	/**
+	 * Get the path to the log file.
+	 * 
+	 * @return path to log file
+	 * @see #setLogFile(String)
+	 */
 	public String getLogFile() {
 		return logFile;
 	}
-	
+
+	/**
+	 * Set the maximum amount of time to wait for the GUI to start.
+	 * 
+	 * @param guiStartTimeout
+	 *            time to wait (in milliseconds)
+	 * @see #getGuiStartTimeout()
+	 */
 	public void setGuiStartTimeout(int guiStartTimeout) {
 		this.guiStartTimeout = guiStartTimeout;
 	}
-	
+
+	/**
+	 * Get the maximum amount of time to wait for the GUI to start.
+	 * 
+	 * @return time to wait (in milliseconds)
+	 * @see #setGuiStartTimeout()
+	 */
 	public int getGuiStartTimeout() {
 		return guiStartTimeout;
 	}
 
+	/**
+	 * Set the amount of time to wait before attempting to find the GUI.
+	 * 
+	 * @param initialWaitTime
+	 *            time to wait (in milliseconds)
+	 * @see #getInitialWaitTime()
+	 */
 	public void setInitialWaitTime(int initialWaitTime) {
 		this.initialWaitTime = initialWaitTime;
 	}
 
+	/**
+	 * Get the amount of time to wait befroe attempting to find the GUI.
+	 * 
+	 * @return time to wait (in milliseconds)
+	 * @see #setInitialWaitTime(int)
+	 */
 	public int getInitialWaitTime() {
 		return initialWaitTime;
 	}
-	
+
+	/**
+	 * Set the main class of the GUI.
+	 * 
+	 * @param mainClass
+	 *            fully qualified name of main class
+	 * @see Class#getName()
+	 * @see #setMainClass(String)
+	 */
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
 	}
 
+	/**
+	 * Get the name of the main class of the GUI.
+	 * 
+	 * @return the name of the main class
+	 * @see #setMainClass(String)
+	 */
 	public String getMainClass() {
 		return mainClass;
 	}
-	
+
+	/**
+	 * Set the configuration.xml file to use.
+	 * 
+	 * @param configFile
+	 *            path to config file
+	 * @see #getConfigFile()
+	 */
 	public void setConfigFile(String configFile) {
 		this.configFile = configFile;
 	}
 
+	/**
+	 * Get the path to the configuration.xml file.
+	 * 
+	 * @return path to config file
+	 * @see #setConfigFile(String)
+	 */
 	public String getConfigFile() {
 		return configFile;
 	}
-	
+
+	/**
+	 * Set the arguments to the main method of the GUI.
+	 * 
+	 * @param arguments
+	 *            the arguments to the GUI
+	 * @see #getArguments()
+	 */
 	public void setArguments(String[] arguments) {
 		this.arguments = arguments;
 	}
 
+	/**
+	 * Get the arguments to the main method of the GUI.
+	 * 
+	 * @return arguments to pass to main method
+	 * @see #setArguments(String[])
+	 */
 	public String[] getArguments() {
 		return arguments;
 	}
 
+	/**
+	 * Set the URLs to add to the classpath when loading the GUI.
+	 * 
+	 * @param urls
+	 *            URLs to use
+	 * @see #getUrls()
+	 */
 	public void setUrls(URL[] urls) {
 		this.urls = urls;
 	}
 
+	/**
+	 * Get the URLS to add to the classpath when loading the GUI.
+	 * @return a possibly empty array of URLs to use
+	 */
 	public URL[] getUrls() {
 		return urls;
 	}

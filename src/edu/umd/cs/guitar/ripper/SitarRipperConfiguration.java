@@ -46,30 +46,44 @@ public class SitarRipperConfiguration extends SitarConfiguration {
 	
 	@Option(name = "-ow", usage = "log file name ", aliases = "--open-win-file")
 	private String logWidgetFile = "log_widget.xml";
-	
-    // @Option(name = "-iw", usage =
-    // "file  containing a list of windows should be ignored during ripping ",
-    // aliases = "--ignore-window-file")
-    // static public String IGNORE_WIN_FILE;
-    //
-    // @Option(name = "-ic", usage =
-    // "file  containing a list of components should be ignored during ripping ",
-    // aliases = "--ignore-component-file")
-    // static public String IGNORE_COMPONENT_FILE;
-    
-	
+
+	/**
+	 * Set the resulting GUI structure file path.
+	 * 
+	 * @param guiFile
+	 *            path to output GUI structure
+	 * @see #getGuiFile()
+	 */
 	public void setGuiFile(String guiFile) {
 		this.guiFile = guiFile;
 	}
 
+	/**
+	 * Get the resulting GUI structure file path.
+	 * 
+	 * @return path to output GUI structure
+	 * @see #setGuiFile(String)
+	 */
 	public String getGuiFile() {
 		return guiFile;
 	}
-	
+
+	/**
+	 * Set the log file for widgets.
+	 * 
+	 * @param logWidgetFile
+	 *            path to log file
+	 * @see #getLogWidgetFile()
+	 */
 	public void setLogWidgetFile(String logWidgetFile) {
 		this.logWidgetFile = logWidgetFile;
 	}
 
+	/**
+	 * Get the log file for widgets.
+	 * 
+	 * @return path to log file
+	 */
 	public String getLogWidgetFile() {
 		return logWidgetFile;
 	}

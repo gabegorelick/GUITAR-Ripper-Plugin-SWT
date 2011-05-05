@@ -22,8 +22,17 @@ package edu.umd.cs.guitar.ripper.filter;
 import edu.umd.cs.guitar.model.GComponent;
 import edu.umd.cs.guitar.model.GWindow;
 
+/**
+ * Parent of all filters in Sitar.
+ * 
+ * @author Gabe Gorelick
+ * 
+ */
 public abstract class SitarFilter extends GComponentFilter {
 
+	/**
+	 * Default constructor.
+	 */
 	protected SitarFilter() {
 		// this space intentionally left blank
 	}
@@ -41,7 +50,9 @@ public abstract class SitarFilter extends GComponentFilter {
 	 * Return whether this component should be processed by this filter.
 	 * 
 	 * @param component
+	 *            the component to consider
 	 * @param window
+	 *            the window the component lives in
 	 * @return {@code true} if component should be processed
 	 */
 	public abstract boolean shouldProcess(GComponent component, GWindow window);

@@ -30,14 +30,29 @@ import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
 
+/**
+ * Args4j {@code OptionHandler} to parse arrays of URLs.
+ * 
+ * @author Gabe Gorelick
+ *
+ */
 public class URLArrayOptionHandler extends OptionHandler<URL[]> {
 
+	/**
+	 * Constructor used by Args4j.
+	 * @param parser the command line parser
+	 * @param option the option to handle
+	 * @param setter value setter
+	 */
 	public URLArrayOptionHandler(CmdLineParser parser, OptionDef option,
 			Setter<? super URL[]> setter) {
 		
 		super(parser, option, setter);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int parseArguments(Parameters params) throws CmdLineException {
 		int counter = 0;

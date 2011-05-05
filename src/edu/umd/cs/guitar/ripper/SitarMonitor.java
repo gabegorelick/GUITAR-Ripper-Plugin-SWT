@@ -32,11 +32,14 @@ import edu.umd.cs.guitar.util.GUITARLog;
 public class SitarMonitor {
 
 	private final SitarApplication application;
-	
+
 	/**
-	 * Constructor
-	 * @param config configuration
-	 * @param app the application to interact with
+	 * Sole constructor.
+	 * 
+	 * @param config
+	 *            configuration
+	 * @param app
+	 *            the application to test
 	 */
 	public SitarMonitor(SitarConfiguration config, SitarApplication app) {
 		this.application = app;
@@ -46,12 +49,12 @@ public class SitarMonitor {
 			public void uncaughtException(Thread t, Throwable e) {
 				if (e instanceof ExitException) {
 					GUITARLog.log.warn("Application tried to call System.exit");
+					// don't quit if GUI tried to close
 				} else {
 					GUITARLog.log.error("Uncaught exception", e);
+					// dispose GUI if GUI threw exception
+					cleanUp();
 				}
-				
-				// dispose GUI
-				cleanUp();
 			}
 		});
 	}
@@ -61,7 +64,7 @@ public class SitarMonitor {
 	 * 
 	 * @see SitarRipperMonitor#cleanUp()
 	 */
-	public void cleanUp() {
+	public void cleanUp() {		
 		application.getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {

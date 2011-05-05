@@ -64,13 +64,14 @@ public class SitarRipperMonitor extends GRipperMonitor {
 	// windows encountered during GUI expansion
 	private final LinkedList<Shell> openedWinStack;
 	private final LinkedList<Shell> closedWinStack;
-	
+
 	/**
-	 * Constructor
+	 * Sole constructor.
 	 * 
 	 * @param config
 	 *            ripper configuration
 	 * @param app
+	 *            application to rip
 	 */
 	public SitarRipperMonitor(SitarRipperConfiguration config, SitarApplication app) {
 		super();
@@ -89,6 +90,14 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		// don't store application.getDisplay because it's still null at this point 
 	}
 
+	/**
+	 * Get a list of the GUI's root windows. Since SWT does not have a notion of
+	 * "root" windows, the root windows are whatever windows are open when this method is called.
+	 * 
+	 * @return list of windows
+	 * 
+	 * @see org.eclipse.swt.widgets.Display#getShells()
+	 */
 	@Override
 	public List<GWindow> getRootWindows() {
 		final List<GWindow> retWindowList = new ArrayList<GWindow>();
@@ -116,27 +125,54 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		return retWindowList;
 	}
 
+	/**
+	 * Wait for the application to start.
+	 * 
+	 * @see SitarApplication#connect()
+	 */
 	@Override
 	public void setUp() {		
 		// sleep until application is ready
 		application.connect();
 	}
 	
+	/**
+	 * Clean up after ripping has completed.
+	 * 
+	 * @see SitarMonitor#cleanUp()
+	 */
 	@Override
 	public void cleanUp() {
 		monitor.cleanUp();
 	}
 
+	/**
+	 * Get whether the previous interaction with the GUI opened a new window.
+	 * 
+	 * @return {@code true} if new window was opened
+	 * @see #getOpenedWindowCache()
+	 * @see #isWindowClosed()
+	 */
 	@Override
 	public boolean isNewWindowOpened() {
 		return !openedWinStack.isEmpty();
 	}
 
+	/**
+	 * Get whether the previous interaction with the GUI closed a window.
+	 * 
+	 * @return {@code true} if a window was closed
+	 * @see #getClosedWindowCache()
+	 * @see #isNewWindowOpened()
+	 */
 	@Override
 	public boolean isWindowClosed() {
 		return !closedWinStack.isEmpty();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public LinkedList<GWindow> getOpenedWindowCache() {
 		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
@@ -149,6 +185,9 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		return retWindows;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected LinkedList<GWindow> getClosedWindowCache() {
 		LinkedList<GWindow> retWindows = new LinkedList<GWindow>();
@@ -161,12 +200,21 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		return retWindows;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void resetWindowCache() {
 		openedWinStack.clear();
 		closedWinStack.clear();
 	}
 
+	/**
+	 * Close a given window.
+	 * 
+	 * @param gWindow
+	 *            the window to close
+	 */
 	@Override
 	public void closeWindow(GWindow gWindow) {
 		SitarWindow sWindow = (SitarWindow) gWindow;
@@ -181,6 +229,9 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isIgnoredWindow(GWindow window) {
 		String sWindow = window.getTitle();
@@ -188,6 +239,9 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		return windowsToIgnore.contains(sWindow);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void expandGUI(GComponent component) {
 		SitarWidget widget = (SitarWidget) component;
@@ -202,7 +256,7 @@ public class SitarRipperMonitor extends GRipperMonitor {
 	 * 
 	 * @param window
 	 *            the window to consider
-	 * @return true if worth ripping, false otherwise
+	 * @return {@code true} if worth ripping, false otherwise
 	 */
 	private boolean isValidRootWindow(final Shell window) {
 		final AtomicBoolean visible = new AtomicBoolean();
@@ -218,10 +272,11 @@ public class SitarRipperMonitor extends GRipperMonitor {
 	}
 
 	/**
+	 * Determine whether a given component is expandable.
 	 * @deprecated Redundant since {@link #expandGUI(GComponent)} checks for itself. 
-	 * @param gComponent
-	 * @param window
-	 * @return
+	 * @param gComponent component to test
+	 * @param window the window the component lives in
+	 * @return {@code true} if expandable
 	 */
 	@Override
 	@Deprecated
@@ -229,7 +284,12 @@ public class SitarRipperMonitor extends GRipperMonitor {
 		// attempt to expand all widgets
 		return true;
 	}
-	
+
+	/**
+	 * Get the application used by this monitor.
+	 * 
+	 * @return the application used
+	 */
 	public SitarApplication getApplication() {
 		return application;
 	}

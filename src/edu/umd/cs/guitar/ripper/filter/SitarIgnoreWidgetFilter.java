@@ -36,7 +36,13 @@ import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
 public class SitarIgnoreWidgetFilter extends SitarFilter {
 
 	private final List<FullComponentType> ignoredComponents;
-	
+
+	/**
+	 * Sole constructor.
+	 * 
+	 * @param ignoredComponents
+	 *            list of ignored components
+	 */
 	public SitarIgnoreWidgetFilter(List<FullComponentType> ignoredComponents) {
 		super();
 		this.ignoredComponents = ignoredComponents;
@@ -80,6 +86,15 @@ public class SitarIgnoreWidgetFilter extends SitarFilter {
 
 	}
 
+	/**
+	 * Rips the given component. Since this filter is for ignored components, this
+	 * method simply returns {@code null}.
+	 * 
+	 * @param component the component to rip
+	 * @param the window this component live in
+	 * 
+	 * @return {@code null}
+	 */
 	@Override
 	public ComponentType ripComponent(GComponent component, GWindow window) {
 		return null;
