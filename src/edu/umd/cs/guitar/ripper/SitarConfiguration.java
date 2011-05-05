@@ -123,7 +123,7 @@ public abstract class SitarConfiguration {
 	 * Get the maximum amount of time to wait for the GUI to start.
 	 * 
 	 * @return time to wait (in milliseconds)
-	 * @see #setGuiStartTimeout()
+	 * @see #setGuiStartTimeout(int)
 	 */
 	public int getGuiStartTimeout() {
 		return guiStartTimeout;

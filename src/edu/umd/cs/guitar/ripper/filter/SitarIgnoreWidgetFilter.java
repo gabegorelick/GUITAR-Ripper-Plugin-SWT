@@ -87,11 +87,13 @@ public class SitarIgnoreWidgetFilter extends SitarFilter {
 	}
 
 	/**
-	 * Rips the given component. Since this filter is for ignored components, this
-	 * method simply returns {@code null}.
+	 * Rips the given component. Since this filter is for ignored components,
+	 * this method simply returns {@code null}.
 	 * 
-	 * @param component the component to rip
-	 * @param the window this component live in
+	 * @param component
+	 *            the component to rip
+	 * @param window
+	 *            the window this component live in
 	 * 
 	 * @return {@code null}
 	 */

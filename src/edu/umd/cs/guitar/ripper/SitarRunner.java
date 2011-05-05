@@ -26,7 +26,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * This class handles running the GUI and {@link SitarExecutor}. As
  * SWTGuitar uses a fairly complicated threading model, clients should make use
  * of this class instead of trying to run {@link SitarRipper} or
- * {@link SWTReplayer} directly.
+ * {@code SitarReplayer} directly.
  * 
  * @author Gabe Gorelick
  * 
