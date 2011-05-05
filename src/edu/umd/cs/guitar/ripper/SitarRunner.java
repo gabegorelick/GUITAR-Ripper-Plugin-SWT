@@ -73,15 +73,24 @@ public class SitarRunner {
 		executorThread.start();
 		try {
 			executor.getApplication().startGUI();
-
-			// prevent the main thread closing (and thus the JVM) before
-			// the executor is done
-			executorThread.join();
 		} catch (SitarApplicationStartException e) {
 			GUITARLog.log.error(e);
-		} catch (InterruptedException e) {
-			GUITARLog.log.error(e);
+		} finally {
+			// done in finally block because want to make sure executorThread
+			// terminates even if error occurs, otherwise it may stick around
+			// and cause bad bugs if this is run in testing context
+			try {
+				// prevent the main thread closing (and thus the JVM) before
+				// the executor is done; this causes executor to
+				// eventually time out while connecting to GUI.
+				// TODO notify executor that it can quit so it doesn't keep waiting for no reason
+				executorThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		
+		
 	}
 
 	/**
